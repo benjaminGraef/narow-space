@@ -176,26 +176,26 @@
 
     <key name="seaspace-move-focus-left" type="as">
       <default>["&lt;Super&gt;h"]</default>
-      <summary>Move window (T)</summary>
-      <description>Move focused window using Super+Shift+T</description>
+      <summary>Move focus to window left</summary>
+      <description>Move focused window using Super+h</description>
     </key>
 
     <key name="seaspace-move-focus-right" type="as">
       <default>["&lt;Super&gt;l"]</default>
-      <summary>Move window (T)</summary>
-      <description>Move focused window using Super+Shift+T</description>
+      <summary>Move focus to window right</summary>
+      <description>Move focused window using Super+l</description>
     </key>
 
     <key name="seaspace-move-focus-up" type="as">
       <default>["&lt;Super&gt;k"]</default>
-      <summary>Move window (T)</summary>
-      <description>Move focused window using Super+Shift+T</description>
+      <summary>Move focus to window up</summary>
+      <description>Move focused window using Super+k</description>
     </key>
 
     <key name="seaspace-move-focus-down" type="as">
       <default>["&lt;Super&gt;j"]</default>
-      <summary>Move window (T)</summary>
-      <description>Move focused window using Super+Shift+T</description>
+      <summary>Move focusn tonwindow down</summary>
+      <description>Move focused window using Super+j</description>
     </key>
   </schema>
 </schemalist>

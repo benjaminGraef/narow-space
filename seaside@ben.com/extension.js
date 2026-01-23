@@ -65,8 +65,8 @@ export default class SeaSpaceExtension extends Extension {
             if (!win)
                 return;
 
+            this.onWindowFocused(win.get_id()); // call your handler if you want
             log(`[SeaSpace] Focus changed -> ${win.get_title()} (id=${win.get_id()})`);
-            // this._onWindowFocused?.(win); // call your handler if you want
         });
 
     }
@@ -89,9 +89,20 @@ export default class SeaSpaceExtension extends Extension {
         }
     }
 
+    onWindowFocused(windowId) {
+        for (const workspace of this.workspaces.values()) {
+            if(workspace.setFocusedWindow(windowId)) {
+                // window was in that workspace, done
+                log(`[SeaSpace] focused window on workspace ${workspace.id}`);
+                return;
+            }
+        }
+
+        log(`[SeaSpace] Could not focus: Window not found in any workspace`);
+    }
 
     moveFocus(direction) {
-        log(`[SeaSpace] moveing focus to window on left`);
+        log(`[SeaSpace] moveing focus to window on ${direction}`);
         this.workspaces.get(this.activeWorkspace).moveFocus(direction);
     }
 

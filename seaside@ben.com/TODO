@@ -1,1 +1,1 @@
-*) code crashes when a window is closed --> handle still active in workspace class
+*) moving windows with the mouse brakes the workspace logic since the window is now on a differnt workspace

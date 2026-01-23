@@ -26,19 +26,111 @@ export class Workspace {
             this.focusedWindowId = window.get_id();
         }
     }
-    moveFocus(direction) {
-        switch(direction) {
-            case "left":
-                break;
-            case "right":
-                break;
-            case "up":
-                break;
-            case "down":
-                break;
-            default:
-                log(`[SeaSpace] unknown direction to move to`);
+
+    getWindowLeftOfCurrentlyActive() {
+        const center = this.getCenterOfWindow(this.focusedWindowId);
+        if (!center) return undefined;
+
+        for (const [id, win] of this.windows) {
+            if (id === this.focusedWindowId) {
+                continue;
+            }
+
+            const otherCenter = this.getCenterOfWindow(id);
+            if (!otherCenter) {
+                continue;
+            }
+
+            const dx = center.x - otherCenter.x; // positive => other is left
+            if (dx > 0) {
+                log(`[SeaSpace] found window to the left`);
+                return { id: id, win: win };
+            };
         }
+
+        log(`[SeaSpace] found no window to the left`);
+        return undefined;
+    }
+
+    getCenterOfWindow(windowId) {
+        const win = this.windows.get(windowId);
+        if (!win) {
+            log(`[SeaSpace] Cannot get center of window, id does not exist: ${windowId}`);
+            return undefined;
+        }
+
+        const rect = win.get_frame_rect();
+        return {
+            x: rect.x + rect.width / 2,
+            y: rect.y + rect.height / 2,
+        };
+    }
+
+    getWindowInDirection(direction) {
+        const center = this.getCenterOfWindow(this.focusedWindowId);
+        if (!center) {
+            return undefined;
+        }
+
+        for (const [id, win] of this.windows) {
+            if (id === this.focusedWindowId) {
+                continue;
+            }
+
+            const other = this.getCenterOfWindow(id);
+            if (!other) {
+                continue;
+            }
+
+            switch (direction) {
+                case "left":
+                    if (other.x < center.x)
+                        return { id, win };
+                    break;
+
+                case "right":
+                    if (other.x > center.x)
+                        return { id, win };
+                    break;
+
+                case "up":
+                    if (other.y < center.y)
+                        return { id, win };
+                    break;
+
+                case "down":
+                    if (other.y > center.y)
+                        return { id, win };
+                    break;
+            }
+        }
+
+        return undefined;
+    }
+
+    moveFocus(direction) {
+        const result = this.getWindowInDirection(direction);
+        if (!result) {
+            log(`[SeaSpace] no window found in direction ${direction}`);
+            return;
+        }
+
+        result.win.activate(global.get_current_time());
+        this.focusedWindowId = result.id;
+    }
+
+    setFocusedWindow(windowId) {
+        if (this.focusedWindowId === windowId) {
+            return true;
+        }
+
+        if (this.windows.has(windowId)) {
+            log(`[SeaSpace] focused window with id ${windowId}`);
+            this.focusedWindowId = windowId;
+            return true;
+        }
+
+        return false;
     }
 
     removeWindow(windowId) {
