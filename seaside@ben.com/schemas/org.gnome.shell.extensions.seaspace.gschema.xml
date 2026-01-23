@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema
+      id="org.gnome.shell.extensions.seaspace"
+      path="/org/gnome/shell/extensions/seaspace/">
+
+    <!-- ========================= -->
+    <!-- Switch to workspace -->
+    <!-- ========================= -->
+
+    <!-- Super + 1..9 -->
+    <key name="seaspace-switch-workspace1" type="as">
+      <default>["&lt;Super&gt;1"]</default>
+      <summary>Switch to workspace 1</summary>
+      <description>Switch to SeaSpace workspace 1</description>
+    </key>
+
+    <key name="seaspace-switch-workspace2" type="as">
+      <default>["&lt;Super&gt;2"]</default>
+      <summary>Switch to workspace 2</summary>
+      <description>Switch to SeaSpace workspace 2</description>
+    </key>
+
+    <key name="seaspace-switch-workspace3" type="as">
+      <default>["&lt;Super&gt;3"]</default>
+      <summary>Switch to workspace 3</summary>
+      <description>Switch to SeaSpace workspace 3</description>
+    </key>
+
+    <key name="seaspace-switch-workspace4" type="as">
+      <default>["&lt;Super&gt;4"]</default>
+      <summary>Switch to workspace 4</summary>
+      <description>Switch to SeaSpace workspace 4</description>
+    </key>
+
+    <key name="seaspace-switch-workspace5" type="as">
+      <default>["&lt;Super&gt;5"]</default>
+      <summary>Switch to workspace 5</summary>
+      <description>Switch to SeaSpace workspace 5</description>
+    </key>
+
+    <key name="seaspace-switch-workspace6" type="as">
+      <default>["&lt;Super&gt;6"]</default>
+      <summary>Switch to workspace 6</summary>
+      <description>Switch to SeaSpace workspace 6</description>
+    </key>
+
+    <key name="seaspace-switch-workspace7" type="as">
+      <default>["&lt;Super&gt;7"]</default>
+      <summary>Switch to workspace 7</summary>
+      <description>Switch to SeaSpace workspace 7</description>
+    </key>
+
+    <key name="seaspace-switch-workspace8" type="as">
+      <default>["&lt;Super&gt;8"]</default>
+      <summary>Switch to workspace 8</summary>
+      <description>Switch to SeaSpace workspace 8</description>
+    </key>
+
+    <key name="seaspace-switch-workspace9" type="as">
+      <default>["&lt;Super&gt;9"]</default>
+      <summary>Switch to workspace 9</summary>
+      <description>Switch to SeaSpace workspace 9</description>
+    </key>
+
+    <key name="seaspace-switch-workspace-s" type="as">
+      <default>["&lt;Super&gt;s"]</default>
+      <summary>Switch workspace (S)</summary>
+      <description>Trigger SeaSpace Super+S</description>
+    </key>
+
+    <key name="seaspace-switch-workspace-b" type="as">
+      <default>["&lt;Super&gt;b"]</default>
+      <summary>Switch workspace (B)</summary>
+      <description>Trigger SeaSpace Super+B</description>
+    </key>
+
+    <key name="seaspace-switch-workspace-m" type="as">
+      <default>["&lt;Super&gt;m"]</default>
+      <summary>Switch workspace (M)</summary>
+      <description>Trigger SeaSpace Super+M</description>
+    </key>
+
+    <key name="seaspace-switch-workspace-t" type="as">
+      <default>["&lt;Super&gt;t"]</default>
+      <summary>Switch workspace (T)</summary>
+      <description>Trigger SeaSpace Super+T</description>
+    </key>
+
+    <!-- ========================= -->
+    <!-- Move window to workspace -->
+    <!-- ========================= -->
+
+    <!-- Super + Shift + 1..9 -->
+    <key name="seaspace-move-window-to-workspace-1" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;1"]</default>
+      <summary>Move window to workspace 1</summary>
+      <description>Move focused window to SeaSpace workspace 1</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-2" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;2"]</default>
+      <summary>Move window to workspace 2</summary>
+      <description>Move focused window to SeaSpace workspace 2</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-3" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;3"]</default>
+      <summary>Move window to workspace 3</summary>
+      <description>Move focused window to SeaSpace workspace 3</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-4" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;4"]</default>
+      <summary>Move window to workspace 4</summary>
+      <description>Move focused window to SeaSpace workspace 4</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-5" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;5"]</default>
+      <summary>Move window to workspace 5</summary>
+      <description>Move focused window to SeaSpace workspace 5</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-6" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;6"]</default>
+      <summary>Move window to workspace 6</summary>
+      <description>Move focused window to SeaSpace workspace 6</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-7" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;7"]</default>
+      <summary>Move window to workspace 7</summary>
+      <description>Move focused window to SeaSpace workspace 7</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-8" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;8"]</default>
+      <summary>Move window to workspace 8</summary>
+      <description>Move focused window to SeaSpace workspace 8</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-9" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;9"]</default>
+      <summary>Move window to workspace 9</summary>
+      <description>Move focused window to SeaSpace workspace 9</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-s" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;s"]</default>
+      <summary>Move window (S)</summary>
+      <description>Move focused window using Super+Shift+S</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-b" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;b"]</default>
+      <summary>Move window (B)</summary>
+      <description>Move focused window using Super+Shift+B</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-m" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;m"]</default>
+      <summary>Move window (M)</summary>
+      <description>Move focused window using Super+Shift+M</description>
+    </key>
+
+    <key name="seaspace-move-window-to-workspace-t" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;t"]</default>
+      <summary>Move window (T)</summary>
+      <description>Move focused window using Super+Shift+T</description>
+    </key>
+
+    <!-- ================================= -->
+    <!-- Move focus to window in workspace -->
+    <!-- ================================= -->
+
+    <key name="seaspace-move-focus-left" type="as">
+      <default>["&lt;Super&gt;h"]</default>
+      <summary>Move window (T)</summary>
+      <description>Move focused window using Super+Shift+T</description>
+    </key>
+
+    <key name="seaspace-move-focus-right" type="as">
+      <default>["&lt;Super&gt;l"]</default>
+      <summary>Move window (T)</summary>
+      <description>Move focused window using Super+Shift+T</description>
+    </key>
+
+    <key name="seaspace-move-focus-up" type="as">
+      <default>["&lt;Super&gt;k"]</default>
+      <summary>Move window (T)</summary>
+      <description>Move focused window using Super+Shift+T</description>
+    </key>
+
+    <key name="seaspace-move-focus-down" type="as">
+      <default>["&lt;Super&gt;j"]</default>
+      <summary>Move window (T)</summary>
+      <description>Move focused window using Super+Shift+T</description>
+    </key>
+  </schema>
+</schemalist>

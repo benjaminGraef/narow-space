@@ -1,0 +1,8 @@
+{
+  "name": "seaspace",
+  "description": "aerospace like window manageer",
+  "uuid": "seaside@ben.com",
+  "shell-version": [
+    "48"
+  ]
+}
