@@ -65,7 +65,7 @@ export default class SeaSpaceExtension extends Extension {
             if (!win)
                 return;
 
-            this.onWindowFocused(win.get_id()); // call your handler if you want
+            this.onWindowFocused(win); // call your handler if you want
             log(`[SeaSpace] Focus changed -> ${win.get_title()} (id=${win.get_id()})`);
         });
 
@@ -94,9 +94,9 @@ export default class SeaSpaceExtension extends Extension {
         }
     }
 
-    onWindowFocused(windowId) {
+    onWindowFocused(metaWindow) {
         for (const workspace of this.workspaces.values()) {
-            if(workspace.setFocusedWindow(windowId)) {
+            if(workspace.setFocusedWindow(metaWindow)) {
                 // window was in that workspace, done
                 log(`[SeaSpace] focused window on workspace ${workspace.id}`);
                 return;
@@ -152,14 +152,14 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
 
-        const movedWindow = fromWs.removeWindow(activeWinId);
+        const movedWindow = fromWs.removeWindow(activeWin);
         if (!movedWindow) {
-            log(`[SeaSpace] window id ${activeWinId} not found in workspace ${this.activeWorkspace}`);
+            log(`[SeaSpace] window ${activeWin} not found in workspace ${this.activeWorkspace}`);
             return;
         }
         fromWs.showWindows();
 
-        log(`[SeaSpace] moving window id ${activeWinId} to workspace ${workspaceId}`);
+        log(`[SeaSpace] moving window ${activeWin} to workspace ${workspaceId}`);
         toWs.addWindow(movedWindow);
     }
 
@@ -223,9 +223,8 @@ export default class SeaSpaceExtension extends Extension {
         };
 
         const onUnmanaged = () => {
-            const winId = metaWindow.get_id();
             for (const ws of this.workspaces.values()) {
-                ws.removeWindow(winId);
+                ws.removeWindow(metaWindow);
             }
         };
 

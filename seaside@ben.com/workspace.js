@@ -1,19 +1,18 @@
 import Meta from 'gi://Meta';
 const { global } = globalThis;
 
-
 export class Workspace {
     constructor(id) {
         this.modes = Object.freeze({
             VERTICAL: 'vertical',
             HORIZONTAL: 'horizontal',
-            STACKING: 'stacking'
+            STACKING: 'stacking',
         });
 
         this.id = id;
-        this.windows = new Map();
+        this.windows = [];          // Array<Meta.Window>
         this.area = null;
-        this.focusedWindowId = null;
+        this.focusedWindow = null;  // Meta.Window | null
         this.currentMode = this.modes.VERTICAL;
     }
 
@@ -22,9 +21,8 @@ export class Workspace {
     }
 
     setMode(newMode) {
-        if (this.currentMode === newMode) {
+        if (this.currentMode === newMode)
             return;
-        }
 
         log(`[SeaSpace] Switching mode to ${newMode}`);
         this.currentMode = newMode;
@@ -37,53 +35,33 @@ export class Workspace {
         } else if (this.currentMode === this.modes.HORIZONTAL) {
             this.currentMode = this.modes.STACKING;
         } else {
-            this.currentMode = this.modes.VERTICAL
+            this.currentMode = this.modes.VERTICAL;
         }
+
         log(`[SeaSpace] Switching to next mode ${this.currentMode}`);
+        this.showWindows();
     }
 
     setWorkArea(area) {
         this.area = area;
     }
 
-    addWindow(window) {
+    addWindow(win) {
         log(`[SeaSpace] Adding window to workspace ${this.id}`);
 
-        this.windows.set(window.get_id(), window);
-        if (this.focusedWindowId === null) {
-            this.focusedWindowId = window.get_id();
-        }
+        // prevent duplicates (optional but usually helpful)
+        if (this.windows.includes(win))
+            return;
+
+        this.windows.push(win);
+
+        if (this.focusedWindow === null)
+            this.focusedWindow = win;
     }
 
-    getWindowLeftOfCurrentlyActive() {
-        const center = this.getCenterOfWindow(this.focusedWindowId);
-        if (!center) return undefined;
-
-        for (const [id, win] of this.windows) {
-            if (id === this.focusedWindowId) {
-                continue;
-            }
-
-            const otherCenter = this.getCenterOfWindow(id);
-            if (!otherCenter) {
-                continue;
-            }
-
-            const dx = center.x - otherCenter.x; // positive => other is left
-            if (dx > 0) {
-                log(`[SeaSpace] found window to the left`);
-                return { id: id, win: win };
-            };
-        }
-
-        log(`[SeaSpace] found no window to the left`);
-        return undefined;
-    }
-
-    getCenterOfWindow(windowId) {
-        const win = this.windows.get(windowId);
+    getCenterOfWindow(win) {
         if (!win) {
-            log(`[SeaSpace] Cannot get center of window, id does not exist: ${windowId}`);
+            log(`[SeaSpace] Cannot get center of window, window is null/undefined`);
             return undefined;
         }
 
@@ -95,40 +73,30 @@ export class Workspace {
     }
 
     getWindowInDirection(direction) {
-        const center = this.getCenterOfWindow(this.focusedWindowId);
-        if (!center) {
+        const center = this.getCenterOfWindow(this.focusedWindow);
+        if (!center)
             return undefined;
-        }
 
-        for (const [id, win] of this.windows) {
-            if (id === this.focusedWindowId) {
+        for (const win of this.windows) {
+            if (win === this.focusedWindow)
                 continue;
-            }
 
-            const other = this.getCenterOfWindow(id);
-            if (!other) {
+            const other = this.getCenterOfWindow(win);
+            if (!other)
                 continue;
-            }
 
             switch (direction) {
-                case "left":
-                    if (other.x < center.x)
-                        return { id, win };
+                case 'left':
+                    if (other.x < center.x) return win;
                     break;
-
-                case "right":
-                    if (other.x > center.x)
-                        return { id, win };
+                case 'right':
+                    if (other.x > center.x) return win;
                     break;
-
-                case "up":
-                    if (other.y < center.y)
-                        return { id, win };
+                case 'up':
+                    if (other.y < center.y) return win;
                     break;
-
-                case "down":
-                    if (other.y > center.y)
-                        return { id, win };
+                case 'down':
+                    if (other.y > center.y) return win;
                     break;
             }
         }
@@ -137,56 +105,57 @@ export class Workspace {
     }
 
     moveFocus(direction) {
-        const result = this.getWindowInDirection(direction);
-        if (!result) {
+        const win = this.getWindowInDirection(direction);
+        if (!win) {
             log(`[SeaSpace] no window found in direction ${direction}`);
             return;
         }
 
-        result.win.activate(global.get_current_time());
-        this.focusedWindowId = result.id;
+        win.activate(global.get_current_time());
+        this.focusedWindow = win;
     }
 
-    setFocusedWindow(windowId) {
-        if (this.focusedWindowId === windowId) {
+    setFocusedWindow(win) {
+        if (this.focusedWindow === win)
             return true;
-        }
 
-        if (this.windows.has(windowId)) {
-            log(`[SeaSpace] focused window with id ${windowId}`);
-            this.focusedWindowId = windowId;
+        if (this.windows.includes(win)) {
+            log(`[SeaSpace] focused window ${win.get_id?.() ?? '(unknown id)'}`);
+            this.focusedWindow = win;
             return true;
         }
 
         return false;
     }
 
-    removeWindow(windowId) {
-        if (!this.windows.has(windowId)) {
+    removeWindow(win) {
+        const idx = this.windows.indexOf(win);
+        if (idx === -1) {
             log(`[SeaSpace] window not found in workspace ${this.id}`);
             return null;
         }
 
-        const retVal = this.windows.get(windowId);
-        this.windows.delete(windowId);
+        this.windows.splice(idx, 1);
+
+        // if this was focused, choose a new focused window (or null)
+        if (this.focusedWindow === win) {
+            this.focusedWindow = this.windows.length ? this.windows[Math.min(idx, this.windows.length - 1)] : null;
+        }
 
         // minimize the window to not show it again
-        retVal.minimize();
+        win.minimize();
 
-        return retVal;
+        return win;
     }
 
     // returns Meta.MaximizeFlags bitmask or 0
     getMaximizeFlags(win) {
-        // Newer API
         if (typeof win.get_maximize_flags === 'function')
             return win.get_maximize_flags();
 
-        // Older API (common)
         if (typeof win.get_maximized === 'function')
             return win.get_maximized();
 
-        // Newer API alternative (boolean full-maximize)
         if (typeof win.is_maximized === 'function')
             return win.is_maximized() ? Meta.MaximizeFlags.BOTH : 0;
 
@@ -194,11 +163,9 @@ export class Workspace {
     }
 
     isFullscreen(win) {
-        // Newer / common API
         if (typeof win.is_fullscreen === 'function')
             return win.is_fullscreen();
 
-        // Older Mutter API
         if (typeof win.get_fullscreen === 'function')
             return win.get_fullscreen();
 
@@ -207,8 +174,12 @@ export class Workspace {
 
     // returns false if no windows are present
     showWindows() {
-        const numberOfWindows = this.windows.size;
-        if (numberOfWindows === 0) {
+        const numberOfWindows = this.windows.length;
+        if (numberOfWindows === 0)
+            return false;
+
+        if (!this.area) {
+            log(`[SeaSpace] showWindows: no work area set for workspace ${this.id}`);
             return false;
         }
 
@@ -216,23 +187,28 @@ export class Workspace {
 
         let width = 0;
         let height = 0;
-        let xOffset = 0;
-        let yOffset = 0;
+        let xStep = 0;
+        let yStep = 0;
+
         if (this.currentMode === this.modes.VERTICAL) {
             width = Math.floor(this.area.width / numberOfWindows);
-            xOffset = width;
+            xStep = width;
             height = this.area.height;
         } else if (this.currentMode === this.modes.HORIZONTAL) {
             height = Math.floor(this.area.height / numberOfWindows);
-            yOffset = height;
+            yStep = height;
             width = this.area.width;
         } else {
-            // in this mode we stack tha windows on top of each other with a bit of overlap
-            //TODO: implement me
+            // stacking: basic overlap (simple implementation)
+            width = this.area.width;
+            height = this.area.height;
+            xStep = 30;
+            yStep = 30;
         }
 
-        let i = 0;
-        for (const [id, win] of this.windows) {
+        for (let i = 0; i < this.windows.length; i++) {
+            const win = this.windows[i];
+
             // 1) If minimized, unminimize first
             if (win.minimized) {
                 log(`[SeaSpace] unminimizing window`);
@@ -251,17 +227,15 @@ export class Workspace {
             }
 
             // 3) Use work area offsets (x/y), not (0,0)
-            const x = this.area.x + xOffset * i;
-            const y = this.area.y + yOffset * i;
+            const x = this.area.x + xStep * i;
+            const y = this.area.y + yStep * i;
 
             log(`[SeaSpace] putting window ${win.get_id()} to x: ${x} y: ${y}, width: ${width}`);
-            // 4) `user_op=true` often makes Mutter accept the move/resize
             win.move_resize_frame(true, x, y, width, height);
 
-            if (this.focusedWindowId === id) {
+            if (win === this.focusedWindow) {
                 win.activate(global.get_current_time());
             }
-            i++;
         }
 
         return true;
@@ -269,9 +243,8 @@ export class Workspace {
 
     doNotShowWindows() {
         log(`[SeaSpace] do not show window of workspace ${this.id}`);
-        for (const window of this.windows.values()) {
-            window.minimize();
+        for (const win of this.windows) {
+            win.minimize();
         }
     }
 }
-
