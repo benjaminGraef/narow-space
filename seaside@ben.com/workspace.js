@@ -4,14 +4,42 @@ const { global } = globalThis;
 
 export class Workspace {
     constructor(id) {
+        this.modes = Object.freeze({
+            VERTICAL: 'vertical',
+            HORIZONTAL: 'horizontal',
+            STACKING: 'stacking'
+        });
+
         this.id = id;
         this.windows = new Map();
         this.area = null;
         this.focusedWindowId = null;
+        this.currentMode = this.modes.VERTICAL;
     }
 
     getId() {
         return this.id;
+    }
+
+    setMode(newMode) {
+        if (this.currentMode === newMode) {
+            return;
+        }
+
+        log(`[SeaSpace] Switching mode to ${newMode}`);
+        this.currentMode = newMode;
+        this.showWindows();
+    }
+
+    setNextMode() {
+        if (this.currentMode === this.modes.VERTICAL) {
+            this.currentMode = this.modes.HORIZONTAL;
+        } else if (this.currentMode === this.modes.HORIZONTAL) {
+            this.currentMode = this.modes.STACKING;
+        } else {
+            this.currentMode = this.modes.VERTICAL
+        }
+        log(`[SeaSpace] Switching to next mode ${this.currentMode}`);
     }
 
     setWorkArea(area) {
@@ -185,8 +213,23 @@ export class Workspace {
         }
 
         log(`[SeaSpace] show window ${numberOfWindows} of workspace ${this.id}`);
-        const width = Math.floor(this.area.width / numberOfWindows);
 
+        let width = 0;
+        let height = 0;
+        let xOffset = 0;
+        let yOffset = 0;
+        if (this.currentMode === this.modes.VERTICAL) {
+            width = Math.floor(this.area.width / numberOfWindows);
+            xOffset = width;
+            height = this.area.height;
+        } else if (this.currentMode === this.modes.HORIZONTAL) {
+            height = Math.floor(this.area.height / numberOfWindows);
+            yOffset = height;
+            width = this.area.width;
+        } else {
+            // in this mode we stack tha windows on top of each other with a bit of overlap
+            //TODO: implement me
+        }
 
         let i = 0;
         for (const [id, win] of this.windows) {
@@ -208,12 +251,12 @@ export class Workspace {
             }
 
             // 3) Use work area offsets (x/y), not (0,0)
-            const x = this.area.x + width * i;
-            const y = this.area.y;
+            const x = this.area.x + xOffset * i;
+            const y = this.area.y + yOffset * i;
 
             log(`[SeaSpace] putting window ${win.get_id()} to x: ${x} y: ${y}, width: ${width}`);
             // 4) `user_op=true` often makes Mutter accept the move/resize
-            win.move_resize_frame(true, x, y, width, this.area.height);
+            win.move_resize_frame(true, x, y, width, height);
 
             if (this.focusedWindowId === id) {
                 win.activate(global.get_current_time());

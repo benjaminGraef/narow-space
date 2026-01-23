@@ -89,5 +89,11 @@ export const BINDINGS = [
       ext.moveFocus('down');
     },
   },
+  {
+    name: 'seaspace-change-workspace-mode',
+    handler(ext) {
+      ext.changeWorkspaceMode();
+    },
+  },
 ];
 

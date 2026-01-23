@@ -57,7 +57,7 @@ export default class SeaSpaceExtension extends Extension {
 
         this.windowCreatedId = global.display.connect(
             'window-created',
-            (_display, metaWindow) => this._onWindowCreated(metaWindow)
+            (_display, metaWindow) => this.onWindowCreated(metaWindow)
         );
 
         this.focusChangedId = global.display.connect('notify::focus-window', () => {
@@ -81,6 +81,11 @@ export default class SeaSpaceExtension extends Extension {
                 () => b.handler(this)
             );
         }
+    }
+
+    changeWorkspaceMode() {
+        log(`[SeaSpace] change mode key handler`);
+        this.workspaces.get(this.activeWorkspace).setNextMode();
     }
 
     unregisterKeybindings() {
@@ -185,7 +190,7 @@ export default class SeaSpaceExtension extends Extension {
         }
     }
 
-    _onWindowCreated(metaWindow) {
+    onWindowCreated(metaWindow) {
         let waitActorId = 0;
 
         waitActorId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {

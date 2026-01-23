@@ -194,8 +194,18 @@
 
     <key name="seaspace-move-focus-down" type="as">
       <default>["&lt;Super&gt;j"]</default>
-      <summary>Move focusn tonwindow down</summary>
+      <summary>Move focus to window down</summary>
       <description>Move focused window using Super+j</description>
     </key>
+
+    <!-- =============================== -->
+    <!-- Switch modes within a workspace -->
+    <!-- =============================== -->
+    <key name="seaspace-change-workspace-mode" type="as">
+      <default>["&lt;Super&gt;comma"]</default>
+      <summary>Change the mode of the current workspace</summary>
+      <description>Modes can be tile (vertical, horizontal) or stacking</description>
+    </key>
+
   </schema>
 </schemalist>
