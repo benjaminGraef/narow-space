@@ -60,8 +60,6 @@ export class Workspace {
         if (this.focusedWindow === null) {
             this.focusedWindow = win;
         }
-
-        this.showWindows();
     }
 
     getCenterOfWindow(win) {
@@ -162,7 +160,7 @@ export class Workspace {
         return false;
     }
 
-    removeWindow(win) {
+    removeWindow(win, show) {
         const idx = this.windows.indexOf(win);
         if (idx === -1) {
             log(`[SeaSpace] window not found in workspace ${this.id}`);
@@ -179,7 +177,10 @@ export class Workspace {
         }
 
         // minimize the window to not show it again
-        win.minimize();
+        log(`[SeaSpace] removed window from workspace ${this.id}`);
+        if (show) {
+            win.minimize();
+        }
 
         return win;
     }

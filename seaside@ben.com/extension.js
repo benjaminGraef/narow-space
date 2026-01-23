@@ -152,12 +152,11 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
 
-        const movedWindow = fromWs.removeWindow(activeWin);
+        const movedWindow = fromWs.removeWindow(activeWin, true);
         if (!movedWindow) {
             log(`[SeaSpace] window ${activeWin} not found in workspace ${this.activeWorkspace}`);
             return;
         }
-        fromWs.showWindows();
 
         log(`[SeaSpace] moving window ${activeWin} to workspace ${workspaceId}`);
         toWs.addWindow(movedWindow);
@@ -223,8 +222,12 @@ export default class SeaSpaceExtension extends Extension {
         };
 
         const onUnmanaged = () => {
-            for (const ws of this.workspaces.values()) {
-                ws.removeWindow(metaWindow);
+            for (const [id, ws] of this.workspaces) {
+                if(this.activeWorkspace === id) {
+                    ws.removeWindow(metaWindow, true);
+                } else {
+                    ws.removeWindow(metaWindow, false);
+                }
             }
         };
 
