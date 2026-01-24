@@ -13,8 +13,6 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { Workspace } from "./workspace.js";
 import { BINDINGS } from './keyBinding.js';
 
-log('[SeaSpace] extension.js LOADED - BUILD=2026-01-17_1705');
-
 export default class SeaSpaceExtension extends Extension {
     enable() {
         log('[SeaSpace] enable');
@@ -47,13 +45,24 @@ export default class SeaSpaceExtension extends Extension {
             this.workspaces.set(i, new Workspace(i));
         }
 
-        for (const workspace of this.workspaces.values()) {
+        this.updateWorkAreas = () => {
             const area = Main.layoutManager.getWorkAreaForMonitor(0);
-            const panelHeight = Main.panel.height;
-            workspace.setWorkArea({ x: area.x, y: area.y + panelHeight, width: area.width, height: area.height - panelHeight });
-        }
-        log("[SeaSpace] done setting work areas");
+            log(`[SeaSpace] UPDATED workarea x:${area.x} y:${area.y} w:${area.width} h:${area.height} panelH:${Main.panel?.height}`);
 
+            for (const workspace of this.workspaces.values()) {
+                const area = Main.layoutManager.getWorkAreaForMonitor(0);
+                const panelHeight = Main.panel.height;
+                log(`[SeaSpace] PANEL HEIGHT: ${panelHeight}`);
+                workspace.setWorkArea({ x: area.x, y: area.y + panelHeight, width: area.width, height: area.height - panelHeight });
+                workspace.showWindows();
+            }
+        };
+
+        // 1) update once GNOME has finished the current layout pass
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this.updateWorkAreas();
+            return GLib.SOURCE_REMOVE;
+        });
 
         this.windowCreatedId = global.display.connect(
             'window-created',
@@ -96,14 +105,12 @@ export default class SeaSpaceExtension extends Extension {
 
     onWindowFocused(metaWindow) {
         for (const workspace of this.workspaces.values()) {
-            if(workspace.setFocusedWindow(metaWindow)) {
+            if (workspace.setFocusedWindow(metaWindow)) {
                 // window was in that workspace, done
                 log(`[SeaSpace] focused window on workspace ${workspace.id}`);
                 return;
             }
         }
-
-        log(`[SeaSpace] Could not focus: Window not found in any workspace`);
     }
 
     moveFocus(direction) {
@@ -194,8 +201,9 @@ export default class SeaSpaceExtension extends Extension {
 
         waitActorId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             const actor = metaWindow.get_compositor_private?.();
-            if (!actor)
+            if (!actor) {
                 return GLib.SOURCE_CONTINUE; // keep waiting
+            }
 
             // Actor exists now → proceed once
             this.attachFirstFrameHandler(metaWindow, actor);
@@ -223,7 +231,7 @@ export default class SeaSpaceExtension extends Extension {
 
         const onUnmanaged = () => {
             for (const [id, ws] of this.workspaces) {
-                if(this.activeWorkspace === id) {
+                if (this.activeWorkspace === id) {
                     ws.removeWindow(metaWindow, true);
                 } else {
                     ws.removeWindow(metaWindow, false);

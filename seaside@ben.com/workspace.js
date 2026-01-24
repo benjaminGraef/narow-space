@@ -223,7 +223,7 @@ export class Workspace {
             return false;
         }
 
-        log(`[SeaSpace] show window ${n} of workspace ${this.id}`);
+        log(`[SeaSpace] show window ${n} of workspace ${this.id}, with area space x: ${this.area.x}, y: ${this.area.y}, width: ${this.area.width}, height: ${this.area.height}`);
 
         const mode = this.currentMode;
         const stacked = (mode === this.modes.STACKING);
@@ -245,7 +245,9 @@ export class Workspace {
                 win.move_resize_frame(true, x, y, layout.width, layout.height);
 
                 if (win === this.focusedWindow)
+                {
                     win.activate(global.get_current_time());
+                }
             }
 
             return true;
@@ -322,7 +324,6 @@ export class Workspace {
     }
 
     doNotShowWindows() {
-        log(`[SeaSpace] do not show window of workspace ${this.id}`);
         for (const win of this.windows) {
             win.minimize();
         }
