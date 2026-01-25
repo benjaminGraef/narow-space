@@ -146,6 +146,9 @@ export class Workspace {
         this.focusedWindow = win;
     }
 
+    moveFocusedWindow(direction) {
+
+    }
 
     setFocusedWindow(win) {
         if (this.focusedWindow === win)
