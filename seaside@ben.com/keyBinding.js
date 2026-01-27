@@ -107,5 +107,29 @@ export const BINDINGS = [
       ext.resizeWindow('-');
     },
   },
+  {
+    name: 'seaspace-move-window-left',
+    handler(ext) {
+      ext.moveWindow('left');
+    },
+  },
+  {
+    name: 'seaspace-move-window-right',
+    handler(ext) {
+      ext.moveWindow('right');
+    },
+  },
+  {
+    name: 'seaspace-move-window-up',
+    handler(ext) {
+      ext.moveWindow('up');
+    },
+  },
+  {
+    name: 'seaspace-move-window-down',
+    handler(ext) {
+      ext.moveWindow('down');
+    },
+  },
 ];
 

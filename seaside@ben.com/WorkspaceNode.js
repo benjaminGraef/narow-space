@@ -80,13 +80,13 @@ export class WorkspaceNode extends BaseNode {
             return;
         }
 
-        const idA = leafs[idx].getId?.() ?? leafs[idx].id;
-        const idB = leafs[j].getId?.() ?? leafs[j].id;
+        const idA = leafs[idx].getId();
+        const idB = leafs[j].getId();
 
         // Convert pixel delta to weight delta relative to current sum
         let sum = 0;
         for (const leaf of leafs) {
-            sum += weights.get(leaf.getId?.() ?? leaf.id);
+            sum += weights.get(leaf.getId());
         }
 
         const pxPerWeight = totalPx / sum;
@@ -140,10 +140,29 @@ export class WorkspaceNode extends BaseNode {
         return true;
     }
 
+    moveWindow(direction) {
+        if (this.currentMode == this.modes.STACKING) {
+            return;
+        }
+        const leaf = this.getLeafInDirection(direction);
+        if (!leaf) {
+            return;
+        }
+
+        const otherIx = this.leafs.indexOf(leaf);
+        const currentIx = this.leafs.indexOf(this.focusedLeaf);
+
+        const tmp = this.leafs[otherIx];
+        this.leafs[otherIx] = this.leafs[currentIx];
+        this.leafs[currentIx] = tmp;
+
+        this.show();
+    }
+
     removeLeaf(leafOrId, show = true) {
         const idx = this.leafs.findIndex(l =>
             l === leafOrId ||
-            l.getId?.() === leafOrId ||
+            l.getId() === leafOrId ||
             l.id === leafOrId
         );
 
@@ -189,8 +208,9 @@ export class WorkspaceNode extends BaseNode {
 
     getLeafInDirection(direction) {
         const center = this.focusedLeaf?.getCenter?.();
-        if (!center)
+        if (!center) {
             return undefined;
+        }
 
         let best = undefined;
         let bestDist2 = Infinity;
@@ -281,7 +301,7 @@ export class WorkspaceNode extends BaseNode {
     normalizeMissingWeights(axisLeafs, weights) {
         // Ensure every leaf has a weight > 0
         for (const leaf of axisLeafs) {
-            const id = leaf.getId?.() ?? leaf.id;
+            const id = leaf.getId();
             const w = weights.get(id);
             if (!(w > 0)) {
                 weights.set(id, 1);
@@ -336,12 +356,12 @@ export class WorkspaceNode extends BaseNode {
 
         let sum = 0;
         for (const leaf of leafs) {
-            sum += weights.get(leaf.getId?.() ?? leaf.id);
+            sum += weights.get(leaf.getId());
         }
 
         // compute pixel widths using largest remainder
         const parts = leafs.map((leaf, i) => {
-            const id = leaf.getId?.() ?? leaf.id;
+            const id = leaf.getId();
             const w = weights.get(id);
             const exact = (w / sum) * totalW;
             return { leaf, id, i, base: Math.floor(exact), rem: exact - Math.floor(exact) };
@@ -408,11 +428,11 @@ export class WorkspaceNode extends BaseNode {
 
         let sum = 0;
         for (const leaf of leafs) {
-            sum += weights.get(leaf.getId?.() ?? leaf.id);
+            sum += weights.get(leaf.getId());
         }
 
         const parts = leafs.map((leaf, i) => {
-            const id = leaf.getId?.() ?? leaf.id;
+            const id = leaf.getId();
             const w = weights.get(id);
             const exact = (w / sum) * totalH;
             return { leaf, id, i, base: Math.floor(exact), rem: exact - Math.floor(exact) };

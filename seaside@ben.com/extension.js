@@ -164,6 +164,10 @@ export default class SeaSpaceExtension extends Extension {
         this.updateWorkAreas();
     }
 
+    moveWindow(direction) {
+        this.workspaces.get(this.activeWorkspace).moveWindow(direction);
+    }
+
     moveWindowToWorkspace(workspaceId) {
         if (workspaceId === this.activeWorkspace) {
             log(`[SeaSpace] window already in this workspace`);
@@ -298,7 +302,7 @@ export default class SeaSpaceExtension extends Extension {
                 const id = metaWindow.get_id();
 
                 // Avoid duplicates: if already exists, just refresh layout
-                const already = ws.leafs.some(l => (l.getId?.() ?? l.id) === id);
+                const already = ws.leafs.some(l => (l.getId()) === id);
                 if (!already) {
                     const leaf = new WindowNode(id);
                     leaf.setMetaWindow?.(metaWindow);
