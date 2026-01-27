@@ -12,7 +12,7 @@ export class WindowNode extends BaseNode {
      * @param {number} metaWindowId Meta.Window.get_id()
      */
     constructor(metaWindowId) {
-        super(metaWindowId);
+        super(metaWindowId, 'window');
 
         /** @type {Meta.Window|null} */
         this.cachedWindow = null;

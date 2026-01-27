@@ -3,7 +3,7 @@ import { BaseNode } from './BaseNode.js';
 
 export class WorkspaceNode extends BaseNode {
     constructor(id) {
-        super(id);
+        super(id, 'workspace');
 
         this.modes = Object.freeze({
             VERTICAL: 'vertical',
@@ -26,7 +26,7 @@ export class WorkspaceNode extends BaseNode {
     }
 
     setNextMode() {
-        if(this.focusedLeaf.setNextMode) {
+        if (this.focusedLeaf?.isWorkspace?.()) {
             this.focusedLeaf.setNextMode();
             return;
         }
@@ -46,7 +46,7 @@ export class WorkspaceNode extends BaseNode {
 
     // resize the currently active leaf node, depeding on the mode
     resize(deltaPx) {
-        if (this.focusedLeaf.resize) {
+        if (this.focusedLeaf?.isWorkspace?.()) {
             this.focusedLeaf.resize(deltaPx);
             return;
         }
@@ -127,8 +127,11 @@ export class WorkspaceNode extends BaseNode {
         this.show();
     }
 
-
     addLeaf(leaf) {
+        if (this.focusedLeaf?.isWorkspace?.()) {
+            return this.focusedLeaf.addLeaf(leaf);
+        }
+
         if (!leaf || this.leafs.includes(leaf)) {
             return false;
         }
@@ -145,7 +148,7 @@ export class WorkspaceNode extends BaseNode {
     }
 
     moveWindow(direction) {
-        if (this.focusedLeaf.moveWindow) {
+        if (this.focusedLeaf?.isWorkspace?.()) {
             this.focusedLeaf.moveWindow(direction);
             return;
         }
@@ -190,6 +193,7 @@ export class WorkspaceNode extends BaseNode {
 
         // Create nested workspace that will hold both leaves
         const nested = new WorkspaceNode(`join:${this.getId()}:${Date.now()}`);
+        log(`[SeaSpace] Settingn nested work area to: ${this.workArea.x} ${this.workArea.y} ${this.workArea.width} ${this.workArea.height}`);
         nested.setWorkArea(this.workArea);
         nested.addLeaf(otherLeaf);
         nested.addLeaf(this.focusedLeaf);
@@ -206,6 +210,9 @@ export class WorkspaceNode extends BaseNode {
         this.show();
     }
 
+    getNumberOfLeafs() {
+        return this.leafs.length;
+    }
 
     removeLeaf(leafOrId, show = true) {
         const idx = this.leafs.findIndex(l =>
@@ -215,6 +222,20 @@ export class WorkspaceNode extends BaseNode {
         );
 
         if (idx < 0) {
+            // not found in this workspace, check all leaf workspaces
+            for (let i = 0; i < this.leafs.length; i++) {
+                const leaf = this.leafs[i];
+                if (leaf.isWorkspace() && leaf.removeLeaf(leafOrId)) {
+                    // window was in that workspace
+                    if (leaf.getNumberOfLeafs() === 0) {
+                        // collapse nested workspace
+                        this.leafs.splice(i, 1);
+                        this.show();
+                    }
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -319,8 +340,8 @@ export class WorkspaceNode extends BaseNode {
         }
 
         // check first if the current leaf is a workspace in itself
-        if (this.focusedLeaf.moveFocus) {
-            if(this.focusedLeaf.moveFocus(direction)) {
+        if (this.focusedLeaf?.isWorkspace?.()) {
+            if (this.focusedLeaf.moveFocus(direction)) {
                 return true;
             }
         }
@@ -474,6 +495,8 @@ export class WorkspaceNode extends BaseNode {
         let x = this.workArea.x;
         for (const p of parts) {
             p.leaf.setWorkArea({ x, y: this.workArea.y, width: p.base, height: totalH });
+
+            log(`[SeaSpace] SHOW(): Setting leaf work area to: ${x} ${this.workArea.y} ${p.base} ${totalH}`);
             p.leaf.show();
             x += p.base;
         }

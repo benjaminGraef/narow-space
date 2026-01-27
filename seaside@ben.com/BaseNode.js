@@ -1,6 +1,7 @@
 export class BaseNode {
-    constructor(id) {
+    constructor(id, type) {
         this.id = id;
+        this.type = type;
 
         /** @type {{x:number,y:number,width:number,height:number}|null} */
         this.workArea = null;
@@ -10,6 +11,14 @@ export class BaseNode {
     }
 
     // ---- identity -------------------------------------------------------------
+
+    isWindow() {
+        return this.type === 'window';
+    }
+
+    isWorkspace() {
+        return this.type === 'workspace';
+    }
 
     getId() {
         return this.id;
