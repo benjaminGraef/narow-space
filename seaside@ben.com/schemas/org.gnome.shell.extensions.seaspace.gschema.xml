@@ -173,7 +173,6 @@
     <!-- ================================= -->
     <!-- Move focus to window in workspace -->
     <!-- ================================= -->
-
     <key name="seaspace-move-focus-left" type="as">
       <default>["&lt;Super&gt;h"]</default>
       <summary>Move focus to window left</summary>
@@ -210,7 +209,6 @@
     <!-- ============================== -->
     <!-- Resizing windows or workspaces -->
     <!-- ============================== -->
-
     <key name="seaspace-resize-inc" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;p"]</default>
       <summary>Resize window +</summary>
@@ -226,7 +224,6 @@
     <!-- ================================= -->
     <!-- Moving windows within a workspace -->
     <!-- ================================= -->
-
     <key name="seaspace-move-window-left" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;h"]</default>
       <summary>Resize window +</summary>
@@ -253,6 +250,15 @@
       <summary>Resize window +</summary>
       <description>Move active window one to down within the workspace.
       Works only in vertical tiling mode</description>
+    </key>
+
+    <!-- ======================== -->
+    <!-- Enter/Leave Service mode -->
+    <!-- ======================== -->
+    <key name="seaspace-service-mode" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;x"]</default>
+      <summary>Resize window +</summary>
+      <description>Enter and leave service mode</description>
     </key>
 
   </schema>

@@ -27,6 +27,7 @@ export default class SeaSpaceExtension extends Extension {
         this.settings = this.getSettings('org.gnome.shell.extensions.seaspace');
         this.registerKeybindings();
 
+        this.isServiceModeOn = false;
         this.activeWorkspace = 1;
         this.workspaces = new Map();
         this.workspaces.set('S', new WorkspaceNode('S'));
@@ -63,13 +64,7 @@ export default class SeaSpaceExtension extends Extension {
         // this._workareasChangedId = Main.layoutManager.connect('workareas-changed', () => this.updateWorkAreas());
 
         this.windowCreatedId = global.display.connect('window-created', (_display, metaWindow) => {
-            log('[SeaSpace] connect lambda');
             this.onWindowCreated(metaWindow);
-        });
-
-        this.windowClosedId = global.display.connect('window-closed', (_display, metaWindow) => {
-            log('[SeaSpace] closed lambda');
-            this.removeWindowEverywhere(metaWindow.get_id());
         });
 
         this.focusChangedId = global.display.connect('notify::focus-window', () => {
@@ -81,6 +76,8 @@ export default class SeaSpaceExtension extends Extension {
         });
 
         this.seedExistingWindows();
+
+        log(`[SeaSpace] setup done`);
     }
 
     disable() {
@@ -165,7 +162,16 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     moveWindow(direction) {
-        this.workspaces.get(this.activeWorkspace).moveWindow(direction);
+        if (!this.isServiceModeOn) {
+            this.workspaces.get(this.activeWorkspace).moveWindow(direction);
+        } else {
+            this.workspaces.get(this.activeWorkspace).joinWindow(direction);
+        }
+    }
+
+    serviceMode() {
+        this.isServiceModeOn = !this.isServiceModeOn;
+        log(`[SeaSpace] Service mode: ${this.isServiceModeOn}`);
     }
 
     moveWindowToWorkspace(workspaceId) {

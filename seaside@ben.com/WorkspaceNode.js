@@ -25,28 +25,32 @@ export class WorkspaceNode extends BaseNode {
         this.STACKED_OVERLAP = 20;
     }
 
-    setMode(newMode) {
-        if (this.currentMode === newMode) {
+    setNextMode() {
+        if(this.focusedLeaf.setNextMode) {
+            this.focusedLeaf.setNextMode();
             return;
         }
 
-        this.currentMode = newMode;
-        this.show();
-    }
-
-    setNextMode() {
-        if (this.currentMode === this.modes.VERTICAL)
+        if (this.currentMode === this.modes.VERTICAL) {
             this.currentMode = this.modes.HORIZONTAL;
-        else if (this.currentMode === this.modes.HORIZONTAL)
+        }
+        else if (this.currentMode === this.modes.HORIZONTAL) {
             this.currentMode = this.modes.STACKING;
-        else
+        }
+        else {
             this.currentMode = this.modes.VERTICAL;
+        }
 
         this.show();
     }
 
     // resize the currently active leaf node, depeding on the mode
     resize(deltaPx) {
+        if (this.focusedLeaf.resize) {
+            this.focusedLeaf.resize(deltaPx);
+            return;
+        }
+
         const n = this.leafs.length;
         if (n <= 1 || !this.focusedLeaf || !this.workArea) {
             return;
@@ -141,6 +145,11 @@ export class WorkspaceNode extends BaseNode {
     }
 
     moveWindow(direction) {
+        if (this.focusedLeaf.moveWindow) {
+            this.focusedLeaf.moveWindow(direction);
+            return;
+        }
+
         if (this.currentMode == this.modes.STACKING) {
             return;
         }
@@ -158,6 +167,45 @@ export class WorkspaceNode extends BaseNode {
 
         this.show();
     }
+
+    joinWindow(direction) {
+        log(`[SeaSpace] joining window in direction: ${direction}`);
+
+        if (this.currentMode === this.modes.STACKING) {
+            return;
+        }
+
+        if (!this.focusedLeaf) {
+            return;
+        }
+
+        const otherLeaf = this.getLeafInDirection(direction);
+        if (!otherLeaf) {
+            return;
+        }
+
+        if (otherLeaf === this.focusedLeaf) {
+            return;
+        }
+
+        // Create nested workspace that will hold both leaves
+        const nested = new WorkspaceNode(`join:${this.getId()}:${Date.now()}`);
+        nested.setWorkArea(this.workArea);
+        nested.addLeaf(otherLeaf);
+        nested.addLeaf(this.focusedLeaf);
+
+        this.removeLeaf(otherLeaf, /*show*/ false);
+        this.removeLeaf(this.focusedLeaf, /*show*/ false);
+
+        this.leafs.push(nested);
+        nested.setParent?.(this);
+
+        this.lastFocusedLeaf = this.focusedLeaf;
+        this.focusedLeaf = nested;
+
+        this.show();
+    }
+
 
     removeLeaf(leafOrId, show = true) {
         const idx = this.leafs.findIndex(l =>
@@ -249,15 +297,32 @@ export class WorkspaceNode extends BaseNode {
         return best;
     }
 
+    focus() {
+        if (!this.focusedLeaf) {
+            if (this.leafs.length > 0) {
+                this.focusedLeaf = this.leafs[0]
+            }
+        }
+        this.focusedLeaf.focus();
+    }
+
+    // returns true if the moveFocus was performed, false otherwise
     moveFocus(direction) {
         const n = this.leafs.length;
         if (n === 0) {
-            return;
+            return false;
         }
 
         if (!this.focusedLeaf || !this.leafs.includes(this.focusedLeaf)) {
             this.focusedLeaf = this.leafs[0];
             this.lastFocusedLeaf = null;
+        }
+
+        // check first if the current leaf is a workspace in itself
+        if (this.focusedLeaf.moveFocus) {
+            if(this.focusedLeaf.moveFocus(direction)) {
+                return true;
+            }
         }
 
         if (this.currentMode === this.modes.STACKING) {
@@ -270,19 +335,22 @@ export class WorkspaceNode extends BaseNode {
             this.lastFocusedLeaf = this.focusedLeaf;
             this.focusedLeaf = this.leafs[idx];
 
-            this.focusedLeaf?.focus?.();
+            this.focusedLeaf?.focus();
             this.show();
-            return;
+            return true;
         }
 
         const leaf = this.getLeafInDirection(direction);
         if (!leaf) {
-            return;
+            this.focusedLeaf?.moveFocus?.(direction);
+            return false;
         }
 
         this.lastFocusedLeaf = this.focusedLeaf;
         this.focusedLeaf = leaf;
-        this.focusedLeaf?.focus?.();
+        this.focusedLeaf?.focus();
+
+        return true;
     }
 
     ensureWeights() {
@@ -292,10 +360,6 @@ export class WorkspaceNode extends BaseNode {
         if (!this._weightsY) {
             this._weightsY = new Map();
         }
-    }
-
-    _getWeightsMap() {
-        return (this.currentMode === this.modes.VERTICAL) ? this._weightsX : this._weightsY;
     }
 
     normalizeMissingWeights(axisLeafs, weights) {
@@ -328,7 +392,7 @@ export class WorkspaceNode extends BaseNode {
                 const y = this.workArea.y + overlap * i;
                 const width = Math.max(1, this.workArea.width - overlap * i);
                 const height = Math.max(1, this.workArea.height - overlap * i);
-                leaf.setWorkArea?.({ x, y, width, height });
+                leaf.setWorkArea({ x, y, width, height });
                 leaf.show?.();
             }
             this.focusedLeaf?.focus?.();
@@ -409,8 +473,8 @@ export class WorkspaceNode extends BaseNode {
 
         let x = this.workArea.x;
         for (const p of parts) {
-            p.leaf.setWorkArea?.({ x, y: this.workArea.y, width: p.base, height: totalH });
-            p.leaf.show?.();
+            p.leaf.setWorkArea({ x, y: this.workArea.y, width: p.base, height: totalH });
+            p.leaf.show();
             x += p.base;
         }
 
@@ -477,8 +541,8 @@ export class WorkspaceNode extends BaseNode {
 
         let y = this.workArea.y;
         for (const p of parts) {
-            p.leaf.setWorkArea?.({ x: this.workArea.x, y, width: totalW, height: p.base });
-            p.leaf.show?.();
+            p.leaf.setWorkArea({ x: this.workArea.x, y, width: totalW, height: p.base });
+            p.leaf.show();
             y += p.base;
         }
 

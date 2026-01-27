@@ -131,5 +131,11 @@ export const BINDINGS = [
       ext.moveWindow('down');
     },
   },
+  {
+    name: 'seaspace-service-mode',
+    handler(ext) {
+      ext.serviceMode();
+    },
+  },
 ];
 

@@ -31,18 +31,23 @@ export class BaseNode {
         this.workArea = area;
     }
 
-    resize(deltaSize) {
-
-    }
-
     getCenter() {
-        if (!this.workArea)
+        if (!this.workArea) {
             return undefined;
+        }
 
         return {
             x: this.workArea.x + this.workArea.width / 2,
             y: this.workArea.y + this.workArea.height / 2,
         };
+    }
+
+    getWorkArea() {
+        if (!this.workArea) {
+            return undefined;
+        }
+
+        return this.workArea
     }
 
     // ---- tree operations ------------------------------------------------------
@@ -53,12 +58,6 @@ export class BaseNode {
 
     removeLeaf(_nodeOrId) {
         return false;
-    }
-
-    // ---- focus navigation -----------------------------------------------------
-
-    focus() {
-        return undefined;
     }
 
     // ---- visibility -----------------------------------------------------------
