@@ -6,6 +6,7 @@ import Clutter from 'gi://Clutter';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { WorkspaceNode } from './WorkspaceNode.js';
@@ -21,6 +22,17 @@ export default class SeaSpaceExtension extends Extension {
             y_align: Clutter.ActorAlign.CENTER,
         });
         this.indicator.add_child(this.label);
+        this.indicator.menu.addMenuItem(new PopupMenu.PopupMenuItem('SeaSpace', { reactive: false }));
+        this.indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+        this.paused = false;
+
+        this.pauseItem = new PopupMenu.PopupSwitchMenuItem('Paused', this.paused);
+        this.pauseItem.connect('toggled', (item, state) => {
+            this.paused = state;
+        });
+
+        this.indicator.menu.addMenuItem(this.pauseItem);
         Main.panel.addToStatusArea('seaspace-indicator', this.indicator);
 
         // keybindings 
@@ -215,7 +227,7 @@ export default class SeaSpaceExtension extends Extension {
         toWs.addLeaf(leaf);
 
         if (workspaceId === this.activeWorkspace) toWs.show();
-        
+
         fromWs.show();
         this.updateWorkAreas();
     }
