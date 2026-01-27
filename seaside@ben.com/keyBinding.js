@@ -95,5 +95,17 @@ export const BINDINGS = [
       ext.changeWorkspaceMode();
     },
   },
+  {
+    name: 'seaspace-resize-inc',
+    handler(ext) {
+      ext.resizeWindow('+');
+    },
+  },
+  {
+    name: 'seaspace-resize-dec',
+    handler(ext) {
+      ext.resizeWindow('-');
+    },
+  },
 ];
 

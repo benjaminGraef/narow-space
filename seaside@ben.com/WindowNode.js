@@ -21,12 +21,13 @@ export class WindowNode extends BaseNode {
     }
 
 
-    addLeaf(node) { return false; }
+    addLeaf(node) { return false; } // a window cannot have a leafe
     removeLeaf(nodeOrId) { return false; }
 
     /**
      * Resolve Meta.Window by id.
-     * Safe across lock/unlock & actor rebuilds.
+     * After locking, the metaWindow is not the same anymore, but the id is.
+     * So we get the window by the id here again.
      */
     resolveWindow() {
         const w = this.cachedWindow;
@@ -46,11 +47,13 @@ export class WindowNode extends BaseNode {
     }
 
     setMetaWindow(metaWindow) {
-        if (!metaWindow)
+        if (!metaWindow) {
             return false;
+        }
 
-        if (metaWindow.get_id?.() !== this.id)
+        if (metaWindow.get_id?.() !== this.id) {
             return false;
+        }
 
         this.cachedWindow = metaWindow;
         return true;
@@ -64,12 +67,14 @@ export class WindowNode extends BaseNode {
         super.setWorkArea(area);
 
         const win = this.resolveWindow();
-        if (!win || !area)
+        if (!win || !area) {
             return;
+        }
 
         // Ignore special windows
-        if (win.is_override_redirect?.() || win.skip_taskbar)
+        if (win.is_override_redirect?.() || win.skip_taskbar) {
             return;
+        }
 
         try {
             const flags = win.get_maximized?.();
@@ -92,8 +97,9 @@ export class WindowNode extends BaseNode {
 
     focus() {
         const win = this.resolveWindow();
-        if (!win)
+        if (!win) {
             return false;
+        }
 
         try {
             if (win.minimized)
@@ -111,8 +117,9 @@ export class WindowNode extends BaseNode {
         this.visible = true;
 
         const win = this.resolveWindow();
-        if (!win)
+        if (!win) {
             return;
+        }
 
         try {
             if (win.minimized)
@@ -126,8 +133,9 @@ export class WindowNode extends BaseNode {
         this.visible = false;
 
         const win = this.resolveWindow();
-        if (!win)
+        if (!win) {
             return;
+        }
 
         try {
             win.minimize();

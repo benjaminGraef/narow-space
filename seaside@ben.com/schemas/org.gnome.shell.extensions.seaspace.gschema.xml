@@ -207,5 +207,21 @@
       <description>Modes can be tile (vertical, horizontal) or stacking</description>
     </key>
 
+    <!-- ============================== -->
+    <!-- Resizing windows or workspaces -->
+    <!-- ============================== -->
+
+    <key name="seaspace-resize-inc" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;p"]</default>
+      <summary>Resize window +</summary>
+      <description>Resize window with super shift + </description>
+    </key>
+
+    <key name="seaspace-resize-dec" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;o"]</default>
+      <summary>Resize window .</summary>
+      <description>Resize window with super shift . </description>
+    </key>
+
   </schema>
 </schemalist>

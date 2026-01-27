@@ -23,11 +23,16 @@ export class BaseNode {
         this.parent = parent;
     }
 
+
     // ---- layout ---------------------------------------------------------------
 
     setWorkArea(area) {
         // area: { x, y, width, height }
         this.workArea = area;
+    }
+
+    resize(deltaSize) {
+
     }
 
     getCenter() {

@@ -26,8 +26,9 @@ export class WorkspaceNode extends BaseNode {
     }
 
     setMode(newMode) {
-        if (this.currentMode === newMode)
+        if (this.currentMode === newMode) {
             return;
+        }
 
         this.currentMode = newMode;
         this.show();
@@ -44,9 +45,89 @@ export class WorkspaceNode extends BaseNode {
         this.show();
     }
 
+    // resize the currently active leaf node, depeding on the mode
+    resize(deltaPx) {
+        const n = this.leafs.length;
+        if (n <= 1 || !this.focusedLeaf || !this.workArea) {
+            return;
+        }
+
+        if (this.currentMode === this.modes.STACKING) {
+            return;
+        }
+
+        this.ensureWeights();
+
+        const leafs = this.leafs;
+        const idx = leafs.indexOf(this.focusedLeaf);
+        if (idx < 0) {
+            return;
+        }
+
+        const isVertical = (this.currentMode === this.modes.VERTICAL);
+        const totalPx = isVertical ? this.workArea.width : this.workArea.height;
+        const weights = isVertical ? this._weightsX : this._weightsY;
+
+        // Make sure weights exist
+        this.normalizeMissingWeights(leafs, weights);
+
+        // Choose neighbor index: prefer right/down, else left/up
+        let j = idx + 1;
+        if (j >= n) {
+            j = idx - 1;
+        }
+        if (j < 0) {
+            return;
+        }
+
+        const idA = leafs[idx].getId?.() ?? leafs[idx].id;
+        const idB = leafs[j].getId?.() ?? leafs[j].id;
+
+        // Convert pixel delta to weight delta relative to current sum
+        let sum = 0;
+        for (const leaf of leafs) {
+            sum += weights.get(leaf.getId?.() ?? leaf.id);
+        }
+
+        const pxPerWeight = totalPx / sum;
+        if (!(pxPerWeight > 0)) {
+            return;
+        }
+
+        let dW = deltaPx / pxPerWeight;
+
+        const MIN_PX = 80;
+        const minW = MIN_PX / pxPerWeight;
+
+        let wA = weights.get(idA);
+        let wB = weights.get(idB);
+
+        // We want: wA' = wA + dW, wB' = wB - dW
+        // Calmp dW so wA' >= minW and wB' >= minW
+        const maxGrowA = (wB - minW);
+        const maxShrinkA = (wA - minW);
+
+        if (dW > maxGrowA) {
+            dW = maxGrowA;
+        }
+        if (-dW > maxShrinkA) {
+            dW = -maxShrinkA;
+        }
+
+        wA = Math.max(minW, wA + dW);
+        wB = Math.max(minW, wB - dW);
+
+        weights.set(idA, wA);
+        weights.set(idB, wB);
+
+        this.show();
+    }
+
+
     addLeaf(leaf) {
-        if (!leaf || this.leafs.includes(leaf))
+        if (!leaf || this.leafs.includes(leaf)) {
             return false;
+        }
 
         leaf.setParent?.(this);
         this.leafs.push(leaf);
@@ -66,22 +147,26 @@ export class WorkspaceNode extends BaseNode {
             l.id === leafOrId
         );
 
-        if (idx < 0)
+        if (idx < 0) {
             return false;
+        }
 
         const removed = this.leafs[idx];
         const wasFocused = removed === this.focusedLeaf;
 
         this.leafs.splice(idx, 1);
 
-        if (show)
+        if (show) {
             removed.hide?.();
+        }
 
-        if (removed.getParent?.() === this)
+        if (removed.getParent?.() === this) {
             removed.setParent?.(null);
+        }
 
-        if (this.lastFocusedLeaf === removed)
+        if (this.lastFocusedLeaf === removed) {
             this.lastFocusedLeaf = null;
+        }
 
         if (this.leafs.length === 0) {
             this.focusedLeaf = null;
@@ -111,25 +196,28 @@ export class WorkspaceNode extends BaseNode {
         let bestDist2 = Infinity;
 
         for (const leaf of this.leafs) {
-            if (leaf === this.focusedLeaf)
+            if (leaf === this.focusedLeaf) {
                 continue;
+            }
 
             const other = leaf.getCenter?.();
-            if (!other)
+            if (!other) {
                 continue;
+            }
 
             const dx = other.x - center.x;
             const dy = other.y - center.y;
 
             let ok = false;
             switch (direction) {
-                case 'left':  ok = dx < 0; break;
+                case 'left': ok = dx < 0; break;
                 case 'right': ok = dx > 0; break;
-                case 'up':    ok = dy < 0; break;
-                case 'down':  ok = dy > 0; break;
+                case 'up': ok = dy < 0; break;
+                case 'down': ok = dy > 0; break;
             }
-            if (!ok)
+            if (!ok) {
                 continue;
+            }
 
             const d2 = dx * dx + dy * dy;
             if (d2 < bestDist2) {
@@ -143,8 +231,9 @@ export class WorkspaceNode extends BaseNode {
 
     moveFocus(direction) {
         const n = this.leafs.length;
-        if (n === 0)
+        if (n === 0) {
             return;
+        }
 
         if (!this.focusedLeaf || !this.leafs.includes(this.focusedLeaf)) {
             this.focusedLeaf = this.leafs[0];
@@ -167,62 +256,221 @@ export class WorkspaceNode extends BaseNode {
         }
 
         const leaf = this.getLeafInDirection(direction);
-        if (!leaf)
+        if (!leaf) {
             return;
+        }
 
         this.lastFocusedLeaf = this.focusedLeaf;
         this.focusedLeaf = leaf;
         this.focusedLeaf?.focus?.();
     }
 
+    ensureWeights() {
+        if (!this._weightsX) {
+            this._weightsX = new Map();
+        }
+        if (!this._weightsY) {
+            this._weightsY = new Map();
+        }
+    }
+
+    _getWeightsMap() {
+        return (this.currentMode === this.modes.VERTICAL) ? this._weightsX : this._weightsY;
+    }
+
+    normalizeMissingWeights(axisLeafs, weights) {
+        // Ensure every leaf has a weight > 0
+        for (const leaf of axisLeafs) {
+            const id = leaf.getId?.() ?? leaf.id;
+            const w = weights.get(id);
+            if (!(w > 0)) {
+                weights.set(id, 1);
+            }
+        }
+    }
+
     show() {
         const leafs = this.leafs;
         const n = leafs.length;
+        if (n === 0 || !this.workArea) return false;
 
-        if (n === 0 || !this.workArea)
-            return false;
+        this.ensureWeights();
 
         if (this.currentMode === this.modes.STACKING) {
             const overlap = this.STACKED_OVERLAP;
-
-            // focused last => top
             const ordered = this.focusedLeaf
                 ? [...leafs.filter(l => l !== this.focusedLeaf), this.focusedLeaf]
                 : [...leafs];
 
             for (let i = 0; i < ordered.length; i++) {
                 const leaf = ordered[i];
-
                 const x = this.workArea.x + overlap * i;
                 const y = this.workArea.y + overlap * i;
                 const width = Math.max(1, this.workArea.width - overlap * i);
                 const height = Math.max(1, this.workArea.height - overlap * i);
-
                 leaf.setWorkArea?.({ x, y, width, height });
                 leaf.show?.();
             }
-
+            this.focusedLeaf?.focus?.();
             return true;
         }
 
-        const layout = this.computeLayout(n, this.currentMode);
-
-        for (let i = 0; i < n; i++) {
-            const leaf = leafs[i];
-
-            const x = this.workArea.x + layout.xStep * i;
-            const y = this.workArea.y + layout.yStep * i;
-
-            leaf.setWorkArea?.({ x, y, width: layout.width, height: layout.height });
-            leaf.show?.();
+        if (this.currentMode === this.modes.VERTICAL) {
+            return this.showWeightedVertical(leafs);
         }
 
+        if (this.currentMode === this.modes.HORIZONTAL) {
+            return this.showWeightedHorizontal(leafs);
+        }
+
+        return false;
+    }
+
+    showWeightedVertical(leafs) {
+        const MIN_PX = 80;
+        const totalW = this.workArea.width;
+        const totalH = this.workArea.height;
+
+        const weights = this._weightsX;
+        this.normalizeMissingWeights(leafs, weights);
+
+        let sum = 0;
+        for (const leaf of leafs) {
+            sum += weights.get(leaf.getId?.() ?? leaf.id);
+        }
+
+        // compute pixel widths using largest remainder
+        const parts = leafs.map((leaf, i) => {
+            const id = leaf.getId?.() ?? leaf.id;
+            const w = weights.get(id);
+            const exact = (w / sum) * totalW;
+            return { leaf, id, i, base: Math.floor(exact), rem: exact - Math.floor(exact) };
+        });
+
+        let used = parts.reduce((a, p) => a + p.base, 0);
+        let remaining = totalW - used;
+        parts.slice().sort((a, b) => b.rem - a.rem).forEach(p => {
+            if (remaining > 0) {
+                p.base++;
+                remaining--;
+            }
+        });
+
+        for (const p of parts) {
+            p.base = Math.max(MIN_PX, p.base);
+        }
+
+        // fix overflow caused by clamping
+        let overflow = parts.reduce((a, p) => a + p.base, 0) - totalW;
+        while (overflow > 0) {
+            // shrink the largest panes above MIN_PX first
+            parts.sort((a, b) => b.base - a.base);
+            let shrunk = false;
+            for (const p of parts) {
+                const can = p.base - MIN_PX;
+                if (can <= 0) {
+                    continue;
+                }
+                const dec = Math.min(can, overflow);
+                p.base -= dec;
+                overflow -= dec;
+                shrunk = true;
+                if (overflow === 0) {
+                    break;
+                }
+            }
+            if (!shrunk) {
+                break;
+            }
+        }
+
+        // restore original order
+        parts.sort((a, b) => a.i - b.i);
+
+        let x = this.workArea.x;
+        for (const p of parts) {
+            p.leaf.setWorkArea?.({ x, y: this.workArea.y, width: p.base, height: totalH });
+            p.leaf.show?.();
+            x += p.base;
+        }
+
+        this.focusedLeaf?.focus?.();
         return true;
     }
 
+    showWeightedHorizontal(leafs) {
+        const MIN_PX = 80;
+        const totalW = this.workArea.width;
+        const totalH = this.workArea.height;
+
+        const weights = this._weightsY;
+        this.normalizeMissingWeights(leafs, weights);
+
+        let sum = 0;
+        for (const leaf of leafs) {
+            sum += weights.get(leaf.getId?.() ?? leaf.id);
+        }
+
+        const parts = leafs.map((leaf, i) => {
+            const id = leaf.getId?.() ?? leaf.id;
+            const w = weights.get(id);
+            const exact = (w / sum) * totalH;
+            return { leaf, id, i, base: Math.floor(exact), rem: exact - Math.floor(exact) };
+        });
+
+        let used = parts.reduce((a, p) => a + p.base, 0);
+        let remaining = totalH - used;
+        parts.slice().sort((a, b) => b.rem - a.rem).forEach(p => {
+            if (remaining > 0) {
+                p.base++;
+                remaining--;
+            }
+        });
+
+        for (const p of parts) {
+            p.base = Math.max(MIN_PX, p.base);
+        }
+
+        let overflow = parts.reduce((a, p) => a + p.base, 0) - totalH;
+        while (overflow > 0) {
+            parts.sort((a, b) => b.base - a.base);
+            let shrunk = false;
+            for (const p of parts) {
+                const can = p.base - MIN_PX;
+                if (can <= 0) {
+                    continue;
+                }
+                const dec = Math.min(can, overflow);
+                p.base -= dec;
+                overflow -= dec;
+                shrunk = true;
+                if (overflow === 0) {
+                    break;
+                }
+            }
+            if (!shrunk) {
+                break;
+            }
+        }
+
+        parts.sort((a, b) => a.i - b.i);
+
+        let y = this.workArea.y;
+        for (const p of parts) {
+            p.leaf.setWorkArea?.({ x: this.workArea.x, y, width: totalW, height: p.base });
+            p.leaf.show?.();
+            y += p.base;
+        }
+
+        this.focusedLeaf?.focus?.();
+        return true;
+    }
+
+
     hide() {
-        for (const leaf of this.leafs)
+        for (const leaf of this.leafs) {
             leaf.hide?.();
+        }
     }
 
     computeLayout(n, mode) {

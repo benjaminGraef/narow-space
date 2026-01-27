@@ -14,8 +14,6 @@ import { BINDINGS } from './keyBinding.js';
 
 export default class SeaSpaceExtension extends Extension {
     enable() {
-        log('[SeaSpace] enable');
-
         // panel indicator
         this.indicator = new PanelMenu.Button(0.0, 'SeaSpace');
         this.label = new St.Label({
@@ -29,7 +27,6 @@ export default class SeaSpaceExtension extends Extension {
         this.settings = this.getSettings('org.gnome.shell.extensions.seaspace');
         this.registerKeybindings();
 
-        // workspace instantiation
         this.activeWorkspace = 1;
         this.workspaces = new Map();
         this.workspaces.set('S', new WorkspaceNode('S'));
@@ -87,8 +84,6 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     disable() {
-        log('[SeaSpace] disable');
-
         this.unregisterKeybindings();
         this.settings = null;
 
@@ -150,20 +145,26 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     moveFocus(direction) {
-        log(`[SeaSpace] moving focus ${direction}`);
         this.workspaces.get(this.activeWorkspace)?.moveFocus(direction);
     }
 
+    resizeWindow(direction) {
+        let deltaSize = 0;
+        if (direction === '+') {
+            deltaSize = 30;
+        } else if (direction === '-') {
+            deltaSize = -30;
+        }
+        this.workspaces.get(this.activeWorkspace)?.resize(deltaSize);
+    }
+
     switchToWorkspace(workspaceId) {
-        log(`[SeaSpace] switching to workspace ${workspaceId}`);
         this.activeWorkspace = workspaceId;
         this.label.set_text(String(this.activeWorkspace));
         this.updateWorkAreas();
     }
 
     moveWindowToWorkspace(workspaceId) {
-        log(`[SeaSpace] moving focused window to workspace ${workspaceId}`);
-
         if (workspaceId === this.activeWorkspace) {
             log(`[SeaSpace] window already in this workspace`);
             return;
@@ -196,7 +197,8 @@ export default class SeaSpaceExtension extends Extension {
         toWs.addLeaf(leaf);
 
         if (workspaceId === this.activeWorkspace) toWs.show();
-        if (this.activeWorkspace === this.activeWorkspace) fromWs.show();
+        
+        fromWs.show();
         this.updateWorkAreas();
     }
 
@@ -284,20 +286,20 @@ export default class SeaSpaceExtension extends Extension {
                 const r = metaWindow.get_frame_rect();
 
                 // Some windows start with 0 size. Avoid infinite loop.
-                if ((r.width === 0 || r.height === 0) && tries++ < 50)
+                if ((r.width === 0 || r.height === 0) && tries++ < 50) {
                     return GLib.SOURCE_CONTINUE;
+                }
 
                 const ws = this.workspaces.get(this.activeWorkspace);
-                if (!ws)
+                if (!ws) {
                     return GLib.SOURCE_REMOVE;
+                }
 
                 const id = metaWindow.get_id();
 
                 // Avoid duplicates: if already exists, just refresh layout
                 const already = ws.leafs.some(l => (l.getId?.() ?? l.id) === id);
                 if (!already) {
-
-                    log('[SeaSpace] add window to workspace');
                     const leaf = new WindowNode(id);
                     leaf.setMetaWindow?.(metaWindow);
                     ws.addLeaf(leaf);
