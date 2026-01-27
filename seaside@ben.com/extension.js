@@ -87,6 +87,10 @@ export default class SeaSpaceExtension extends Extension {
             this.onWindowFocused(win.get_id());
         });
 
+        this.grabOpEndId = global.display.connect('grab-op-end', (dpy, screen, window, op) => {
+            this.windowGrabEnd();
+        });
+
         this.seedExistingWindows();
 
         log(`[SeaSpace] setup done`);
@@ -121,6 +125,10 @@ export default class SeaSpaceExtension extends Extension {
         if (this.focusChangedId) {
             global.display.disconnect(this.focusChangedId);
             this.focusChangedId = 0;
+        }
+        if (this.grabOpEndId) {
+            global.display.disconnect(this.grabOpEndId);
+            this.grabOpEndId = 0;
         }
 
         if (this.indicator) {
@@ -165,6 +173,11 @@ export default class SeaSpaceExtension extends Extension {
             deltaSize = -30;
         }
         this.workspaces.get(this.activeWorkspace)?.resize(deltaSize);
+    }
+
+    windowGrabEnd() {
+        // window was grabed, and probalby dragged somewhere, retile
+        this.workspaces.get(this.activeWorkspace)?.show();
     }
 
     switchToWorkspace(workspaceId) {
@@ -280,6 +293,30 @@ export default class SeaSpaceExtension extends Extension {
         return id;
     }
 
+    isTrackableWindow(metaWindow) {
+        if (!metaWindow)
+            return false;
+
+        const t = metaWindow.get_window_type();
+
+        if (t !== Meta.WindowType.NORMAL) {
+            return false;
+        }
+
+        if (metaWindow.is_skip_taskbar?.() || metaWindow.is_skip_pager?.()) {
+            return false;
+        }
+
+        if (metaWindow.is_override_redirect?.()) {
+            return false;
+        }
+
+        // if (metaWindow.is_on_all_workspaces?.())
+        //     return false;
+
+        return true;
+    }
+
     attachFirstFrameHandler(metaWindow, actor) {
         // We only want to run once per window.
         let firstFrameId = 0;
@@ -326,6 +363,11 @@ export default class SeaSpaceExtension extends Extension {
                 }
 
                 const id = metaWindow.get_id();
+
+                if (!this.isTrackableWindow(metaWindow)) {
+                    cleanup();
+                    return GLib.SOURCE_REMOVE;
+                }
 
                 // Avoid duplicates: if already exists, just refresh layout
                 const already = ws.leafs.some(l => (l.getId()) === id);
