@@ -1,3 +1,3 @@
 *) moving windows with the mouse brakes the workspace logic since the window is now on a differnt workspace
 *) dock berücksichtigen
-*) bug wo fenster oben einen rand freilassen fixen
+*) tiling split key wechseln

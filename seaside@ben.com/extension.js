@@ -157,7 +157,11 @@ export default class SeaSpaceExtension extends Extension {
 
     switchToWorkspace(workspaceId) {
         this.activeWorkspace = workspaceId;
-        this.label.set_text(String(this.activeWorkspace));
+        if (this.isServiceModeOn) {
+            this.label.set_text(String(this.activeWorkspace) + " Se");
+        } else {
+            this.label.set_text(String(this.activeWorkspace));
+        }
         this.updateWorkAreas();
     }
 
@@ -171,7 +175,11 @@ export default class SeaSpaceExtension extends Extension {
 
     serviceMode() {
         this.isServiceModeOn = !this.isServiceModeOn;
-        log(`[SeaSpace] Service mode: ${this.isServiceModeOn}`);
+        if (this.isServiceModeOn) {
+            this.label.set_text(String(this.activeWorkspace) + " Se");
+        } else {
+            this.label.set_text(String(this.activeWorkspace));
+        }
     }
 
     moveWindowToWorkspace(workspaceId) {

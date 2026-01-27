@@ -8,7 +8,8 @@ export class WorkspaceNode extends BaseNode {
         this.modes = Object.freeze({
             VERTICAL: 'vertical',
             HORIZONTAL: 'horizontal',
-            STACKING: 'stacking',
+            STACKING_V: 'stacking-v', // change window with left right 
+            STACKING_H: 'stacking-h', // change window with up down
         });
 
         /** @type {BaseNode[]} */
@@ -26,16 +27,18 @@ export class WorkspaceNode extends BaseNode {
     }
 
     setNextMode() {
-        if (this.focusedLeaf?.isWorkspace?.()) {
+        if (this.focusedLeaf?.isWorkspace()) {
             this.focusedLeaf.setNextMode();
             return;
         }
 
         if (this.currentMode === this.modes.VERTICAL) {
             this.currentMode = this.modes.HORIZONTAL;
+        } else if (this.currentMode === this.modes.HORIZONTAL) {
+            this.currentMode = this.modes.STACKING_V;
         }
-        else if (this.currentMode === this.modes.HORIZONTAL) {
-            this.currentMode = this.modes.STACKING;
+        else if (this.currentMode === this.modes.STACKING_V) {
+            this.currentMode = this.modes.STACKING_H;
         }
         else {
             this.currentMode = this.modes.VERTICAL;
@@ -46,7 +49,7 @@ export class WorkspaceNode extends BaseNode {
 
     // resize the currently active leaf node, depeding on the mode
     resize(deltaPx) {
-        if (this.focusedLeaf?.isWorkspace?.()) {
+        if (this.focusedLeaf?.isWorkspace()) {
             this.focusedLeaf.resize(deltaPx);
             return;
         }
@@ -56,7 +59,8 @@ export class WorkspaceNode extends BaseNode {
             return;
         }
 
-        if (this.currentMode === this.modes.STACKING) {
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
             return;
         }
 
@@ -128,7 +132,7 @@ export class WorkspaceNode extends BaseNode {
     }
 
     addLeaf(leaf) {
-        if (this.focusedLeaf?.isWorkspace?.()) {
+        if (this.focusedLeaf?.isWorkspace()) {
             return this.focusedLeaf.addLeaf(leaf);
         }
 
@@ -148,12 +152,13 @@ export class WorkspaceNode extends BaseNode {
     }
 
     moveWindow(direction) {
-        if (this.focusedLeaf?.isWorkspace?.()) {
+        if (this.focusedLeaf?.isWorkspace()) {
             this.focusedLeaf.moveWindow(direction);
             return;
         }
 
-        if (this.currentMode == this.modes.STACKING) {
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
             return;
         }
         const leaf = this.getLeafInDirection(direction);
@@ -174,7 +179,8 @@ export class WorkspaceNode extends BaseNode {
     joinWindow(direction) {
         log(`[SeaSpace] joining window in direction: ${direction}`);
 
-        if (this.currentMode === this.modes.STACKING) {
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
             return;
         }
 
@@ -340,17 +346,35 @@ export class WorkspaceNode extends BaseNode {
         }
 
         // check first if the current leaf is a workspace in itself
-        if (this.focusedLeaf?.isWorkspace?.()) {
+        if (this.focusedLeaf?.isWorkspace()) {
             if (this.focusedLeaf.moveFocus(direction)) {
                 return true;
             }
         }
 
-        if (this.currentMode === this.modes.STACKING) {
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
             let idx = this.leafs.indexOf(this.focusedLeaf);
             if (idx < 0) idx = 0;
 
-            const next = (direction === 'left' || direction === 'up');
+            let next = false;
+            if (this.currentMode === this.modes.STACKING_V) {
+                if (direction === 'left') {
+                    next = true;
+                } else if (direction === 'right') {
+                    next = false;
+                } else {
+                    return false;
+                }
+            } else {
+                if (direction === 'up') {
+                    next = true;
+                } else if (direction === 'down') {
+                    next = false;
+                } else {
+                    return false;
+                }
+            }
             idx = next ? ((idx + 1) % n) : (idx === 0 ? (n - 1) : (idx - 1));
 
             this.lastFocusedLeaf = this.focusedLeaf;
@@ -401,7 +425,8 @@ export class WorkspaceNode extends BaseNode {
 
         this.ensureWeights();
 
-        if (this.currentMode === this.modes.STACKING) {
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentmode === this.modes.STACKING_H) {
             const overlap = this.STACKED_OVERLAP;
             const ordered = this.focusedLeaf
                 ? [...leafs.filter(l => l !== this.focusedLeaf), this.focusedLeaf]
