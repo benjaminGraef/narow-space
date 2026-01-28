@@ -625,14 +625,12 @@ export class WorkspaceNode extends BaseNode {
     }
 
     setFocusedLeaf(leafId) {
-        if (this.focusedLeaf.id === leafId) {
+        if (this.focusedLeaf?.id === leafId) {
             return true;
         }
 
         for (const leaf of this.leafs) {
-
             if (leaf.id === leafId) {
-                log(`[SeaSpace] focused window ${leafId} ?? '(unknown id)'}`);
                 this.focusedLeaf = leaf;
                 return true;
             }

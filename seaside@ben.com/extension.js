@@ -82,7 +82,8 @@ export default class SeaSpaceExtension extends Extension {
         });
 
         this.focusChangedId = global.display.connect('notify::focus-window', () => {
-            const win = global.display.get_focus_window();
+            // const win = global.display.get_focus_window();
+            const win = global.display.focus_window; // property
             if (!win)
                 return;
 
@@ -90,7 +91,9 @@ export default class SeaSpaceExtension extends Extension {
         });
 
         this.grabOpEndId = global.display.connect('grab-op-end', (dpy, screen, window, op) => {
-            this.windowGrabEnd(window);
+            const w = window ?? global.display.focus_window ?? global.display.get_focus_window();
+            log(`[SeaSpace] setup done`);
+            this.windowGrabEnd(w.get_id());
         });
 
         this.seedExistingWindows();
@@ -140,6 +143,24 @@ export default class SeaSpaceExtension extends Extension {
 
         this.workspaces?.clear();
         this.workspaces = null;
+    }
+
+    windowGrabEnd(windowId) {
+        log(`[SeaSpace] retiling after grab start`);
+        if (!windowId) {
+            log(`[SeaSpace] returning window is null ${windowId}`);
+            return;
+        }
+
+        log(`[SeaSpace] retiling after grab mid, id=${windowId}`);
+        // window was grabbed, probably dragged somewhere; retile unless floating
+        if (this.floatingWindows.includes(windowId)) {
+            log(`[SeaSpace] window ${windowId} is floating, not tiling it`);
+            return;
+        }
+
+        log(`[SeaSpace] retiling after grab end, id=${windowId}`);
+        this.workspaces.get(this.activeWorkspace)?.show();
     }
 
     toggleFloating() {
@@ -200,22 +221,6 @@ export default class SeaSpaceExtension extends Extension {
             deltaSize = -30;
         }
         this.workspaces.get(this.activeWorkspace)?.resize(deltaSize);
-    }
-
-    windowGrabEnd(window) {
-        if (!metaWindow)
-            return;
-
-        const id = metaWindow.get_id();
-
-        // window was grabbed, probably dragged somewhere; retile unless floating
-        if (this.floatingWindows.includes(id)) {
-            log(`[SeaSpace] window ${id} is floating, not tiling it`);
-            return;
-        }
-
-        log(`[SeaSpace] retiling after grab end, id=${id}`);
-        this.workspaces.get(this.activeWorkspace)?.show();
     }
 
     switchToWorkspace(workspaceId) {
@@ -288,11 +293,13 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     onWindowFocused(metaWindowId) {
-        for (const ws of this.workspaces.values()) {
+        for (const [id, ws] of this.workspaces) {
             if (ws.setFocusedLeaf(metaWindowId)) {
+                this.switchToWorkspace(id);
                 return;
             }
         }
+        return;
     }
 
     seedExistingWindows() {
