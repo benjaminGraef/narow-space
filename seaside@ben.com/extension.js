@@ -90,10 +90,8 @@ export default class SeaSpaceExtension extends Extension {
             this.onWindowFocused(win.get_id());
         });
 
-        this.grabOpEndId = global.display.connect('grab-op-end', (dpy, screen, window, op) => {
-            const w = window ?? global.display.focus_window ?? global.display.get_focus_window();
-            log(`[SeaSpace] setup done`);
-            this.windowGrabEnd(w.get_id());
+        this.grabOpEndId = global.display.connect('grab-op-end', (_display, metaWindow, op) => {
+            this.windowGrabEnd(metaWindow.get_id());
         });
 
         this.seedExistingWindows();
@@ -146,20 +144,15 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     windowGrabEnd(windowId) {
-        log(`[SeaSpace] retiling after grab start`);
         if (!windowId) {
-            log(`[SeaSpace] returning window is null ${windowId}`);
             return;
         }
 
-        log(`[SeaSpace] retiling after grab mid, id=${windowId}`);
         // window was grabbed, probably dragged somewhere; retile unless floating
         if (this.floatingWindows.includes(windowId)) {
-            log(`[SeaSpace] window ${windowId} is floating, not tiling it`);
             return;
         }
 
-        log(`[SeaSpace] retiling after grab end, id=${windowId}`);
         this.workspaces.get(this.activeWorkspace)?.show();
     }
 
