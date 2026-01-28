@@ -137,5 +137,11 @@ export const BINDINGS = [
       ext.serviceMode();
     },
   },
+  {
+    name: 'seaspace-toggle-floating',
+    handler(ext) {
+      ext.toggleFloating();
+    },
+  }
 ];
 

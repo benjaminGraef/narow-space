@@ -252,13 +252,25 @@
       Works only in vertical tiling mode</description>
     </key>
 
-    <!-- ======================== -->
-    <!-- Enter/Leave Service mode -->
+    <!-- ============================================== -->
+    <!-- Enter/Leave Service mode                       -->
+    <!-- In service mode windows can be joined          -->
+    <!-- to a workspace (workspace withing workspace)   -->
+    <!-- by using the "seaspace-move-window-" functions -->
     <!-- ======================== -->
     <key name="seaspace-service-mode" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;x"]</default>
       <summary>Resize window +</summary>
       <description>Enter and leave service mode</description>
+    </key>
+
+    <!-- ============================================== -->
+    <!-- Toggle currently active window floating/tiling -->
+    <!-- ============================================== -->
+    <key name="seaspace-toggle-floating" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;f"]</default>
+      <summary>Resize window +</summary>
+      <description>Disable/Enable again the tiling for the focused window </description>
     </key>
 
   </schema>

@@ -250,9 +250,9 @@ export class WorkspaceNode extends BaseNode {
 
         this.leafs.splice(idx, 1);
 
-        if (show) {
-            removed.hide?.();
-        }
+        // if (show) {
+        //     removed.hide?.();
+        // }
 
         if (removed.getParent?.() === this) {
             removed.setParent?.(null);

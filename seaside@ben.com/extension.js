@@ -50,6 +50,8 @@ export default class SeaSpaceExtension extends Extension {
             this.workspaces.set(i, new WorkspaceNode(i));
         }
 
+        this.floatingWindows = new Array();
+
         this.updateWorkAreas = () => {
             const area = Main.layoutManager.getWorkAreaForMonitor(0);
 
@@ -88,7 +90,7 @@ export default class SeaSpaceExtension extends Extension {
         });
 
         this.grabOpEndId = global.display.connect('grab-op-end', (dpy, screen, window, op) => {
-            this.windowGrabEnd();
+            this.windowGrabEnd(window);
         });
 
         this.seedExistingWindows();
@@ -140,6 +142,31 @@ export default class SeaSpaceExtension extends Extension {
         this.workspaces = null;
     }
 
+    toggleFloating() {
+        log(`[SeaSpace] togglingFloat`);
+        const metaWindow = global.display.get_focus_window();
+
+        if (!metaWindow) {
+            return;
+        }
+
+        const idx = this.floatingWindows.indexOf(metaWindow.get_id());
+        if (idx !== -1) {
+            const leaf = new WindowNode(metaWindow.get_id());
+            leaf.setMetaWindow?.(metaWindow);
+            this.workspaces.get(this.activeWorkspace).addLeaf(leaf);
+            this.workspaces.get(this.activeWorkspace).show();
+            this.floatingWindows.splice(idx, 1);
+        } else {
+            if (this.workspaces.get(this.activeWorkspace).removeLeaf(metaWindow.get_id())) {
+
+                log(`[SeaSpace] adding window ${metaWindow} to list`);
+                this.floatingWindows.push(metaWindow.get_id());
+                metaWindow.activate(global.get_current_time());
+            }
+        }
+    }
+
     registerKeybindings() {
         for (const b of BINDINGS) {
             Main.wm.addKeybinding(
@@ -175,8 +202,19 @@ export default class SeaSpaceExtension extends Extension {
         this.workspaces.get(this.activeWorkspace)?.resize(deltaSize);
     }
 
-    windowGrabEnd() {
-        // window was grabed, and probalby dragged somewhere, retile
+    windowGrabEnd(window) {
+        if (!metaWindow)
+            return;
+
+        const id = metaWindow.get_id();
+
+        // window was grabbed, probably dragged somewhere; retile unless floating
+        if (this.floatingWindows.includes(id)) {
+            log(`[SeaSpace] window ${id} is floating, not tiling it`);
+            return;
+        }
+
+        log(`[SeaSpace] retiling after grab end, id=${id}`);
         this.workspaces.get(this.activeWorkspace)?.show();
     }
 
