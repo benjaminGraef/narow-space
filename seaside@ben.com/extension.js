@@ -84,8 +84,10 @@ export default class SeaSpaceExtension extends Extension {
         this.focusChangedId = global.display.connect('notify::focus-window', () => {
             // const win = global.display.get_focus_window();
             const win = global.display.focus_window; // property
-            if (!win)
+            log(`[SeaSpace] focus changed`);
+            if (!win) {
                 return;
+            }
 
             this.onWindowFocused(win.get_id());
         });
@@ -153,6 +155,7 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
 
+        log(`[SeaSpace] window grab released redrawing`);
         this.workspaces.get(this.activeWorkspace)?.show();
     }
 
@@ -217,6 +220,18 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     switchToWorkspace(workspaceId) {
+
+        if (workspaceId === this.activeWorkspace) {
+            if (this.isServiceModeOn) {
+                this.label.set_text(`${workspaceId} Se`);
+            }
+            else {
+                this.label.set_text(String(workspaceId));
+            }
+            return;
+        }
+
+        log(`[SeaSpace] switching to workspace ${workspaceId}`)
         this.activeWorkspace = workspaceId;
         if (this.isServiceModeOn) {
             this.label.set_text(String(this.activeWorkspace) + " Se");
@@ -225,6 +240,7 @@ export default class SeaSpaceExtension extends Extension {
         }
         this.updateWorkAreas();
     }
+
 
     moveWindow(direction) {
         if (!this.isServiceModeOn) {

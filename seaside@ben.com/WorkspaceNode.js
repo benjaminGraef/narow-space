@@ -426,7 +426,7 @@ export class WorkspaceNode extends BaseNode {
         this.ensureWeights();
 
         if (this.currentMode === this.modes.STACKING_V
-            || this.currentmode === this.modes.STACKING_H) {
+            || this.currentMode === this.modes.STACKING_H) {
             const overlap = this.STACKED_OVERLAP;
             const ordered = this.focusedLeaf
                 ? [...leafs.filter(l => l !== this.focusedLeaf), this.focusedLeaf]
