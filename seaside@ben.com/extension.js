@@ -90,6 +90,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     updateWorkAreas() {
+        if (this.paused) {
+            return;
+        }
         const area = Main.layoutManager.getWorkAreaForMonitor(0);
 
         for (const [id, ws] of this.workspaces) {
@@ -151,6 +154,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     windowGrabEnd(windowId) {
+        if (this.paused) {
+            return;
+        }
         if (!windowId) {
             return;
         }
@@ -165,7 +171,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     toggleFloating() {
-        log(`[SeaSpace] togglingFloat`);
+        if (this.paused) {
+            return;
+        }
         const metaWindow = global.display.get_focus_window();
 
         if (!metaWindow) {
@@ -207,14 +215,23 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     changeWorkspaceMode() {
+        if (this.paused) {
+            return;
+        }
         this.workspaces.get(this.activeWorkspace)?.setNextMode();
     }
 
     moveFocus(direction) {
+        if (this.paused) {
+            return;
+        }
         this.workspaces.get(this.activeWorkspace)?.moveFocus(direction);
     }
 
     resizeWindow(direction) {
+        if (this.paused) {
+            return;
+        }
         let deltaSize = 0;
         if (direction === '+') {
             deltaSize = 30;
@@ -225,6 +242,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     switchToWorkspace(workspaceId) {
+        if (this.paused) {
+            return;
+        }
 
         if (workspaceId === this.activeWorkspace) {
             if (this.isServiceModeOn) {
@@ -248,6 +268,9 @@ export default class SeaSpaceExtension extends Extension {
 
 
     moveWindow(direction) {
+        if (this.paused) {
+            return;
+        }
         if (!this.isServiceModeOn) {
             this.workspaces.get(this.activeWorkspace).moveWindow(direction);
         } else {
@@ -256,6 +279,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     serviceMode() {
+        if (this.paused) {
+            return;
+        }
         this.isServiceModeOn = !this.isServiceModeOn;
         if (this.isServiceModeOn) {
             this.label.set_text(String(this.activeWorkspace) + " Se");
@@ -265,6 +291,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     moveWindowToWorkspace(workspaceId) {
+        if (this.paused) {
+            return;
+        }
         if (workspaceId === this.activeWorkspace) {
             log(`[SeaSpace] window already in this workspace`);
             return;
@@ -307,6 +336,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     onWindowFocused(metaWindowId) {
+        if (this.paused) {
+            return;
+        }
         for (const [id, ws] of this.workspaces) {
             if (ws.setFocusedLeaf(metaWindowId)) {
                 this.switchToWorkspace(id);
@@ -327,6 +359,9 @@ export default class SeaSpaceExtension extends Extension {
     }
 
     onWindowCreated(metaWindow) {
+        if (this.paused) {
+            return;
+        }
         this.waitForActor(metaWindow, (actor) => this.attachFirstFrameHandler(metaWindow, actor));
     }
 
