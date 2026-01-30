@@ -151,19 +151,28 @@ export class WorkspaceNode extends BaseNode {
         return true;
     }
 
+    // return true if the action could be performed, false otherwise
     moveWindow(direction) {
         if (this.focusedLeaf?.isWorkspace()) {
-            this.focusedLeaf.moveWindow(direction);
-            return;
+            if (this.focusedLeaf.moveWindow(direction)) {
+                return true;
+            }
+            // child could not handle it, lets do it in this workspace
         }
 
         if (this.currentMode === this.modes.STACKING_V
             || this.currentMode === this.modes.STACKING_H) {
-            return;
+            if (this.parent) {
+                return false;
+            }
+            return true;
         }
         const leaf = this.getLeafInDirection(direction);
         if (!leaf) {
-            return;
+            if (this.parent) {
+                return false;
+            }
+            return true;
         }
 
         const otherIx = this.leafs.indexOf(leaf);
@@ -174,6 +183,7 @@ export class WorkspaceNode extends BaseNode {
         this.leafs[currentIx] = tmp;
 
         this.show();
+        return true;
     }
 
     joinWindow(direction) {
@@ -423,6 +433,8 @@ export class WorkspaceNode extends BaseNode {
         const n = leafs.length;
         if (n === 0 || !this.workArea) return false;
 
+
+        log(`[SeaSpace] showing window with id ${this.leafs[0].getId()} and handle`);
         this.ensureWeights();
 
         if (this.currentMode === this.modes.STACKING_V

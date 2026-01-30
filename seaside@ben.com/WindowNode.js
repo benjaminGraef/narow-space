@@ -32,8 +32,9 @@ export class WindowNode extends BaseNode {
      */
     resolveWindow() {
         const w = this.cachedWindow;
-        if (w && !w.destroyed && w.get_id?.() === this.id)
+        if (w && !w.destroyed && w.get_id?.() === this.id) {
             return w;
+        }
 
         for (const actor of global.get_window_actors()) {
             const mw = actor?.meta_window;
@@ -43,6 +44,8 @@ export class WindowNode extends BaseNode {
             }
         }
 
+
+        log(`[SeaSpace] Could not resolve window`);
         this.cachedWindow = null;
         return null;
     }

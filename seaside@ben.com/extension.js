@@ -39,36 +39,26 @@ export default class SeaSpaceExtension extends Extension {
         this.settings = this.getSettings('org.gnome.shell.extensions.seaspace');
         this.registerKeybindings();
 
-        this.isServiceModeOn = false;
-        this.activeWorkspace = 1;
-        this.workspaces = new Map();
-        this.workspaces.set('S', new WorkspaceNode('S'));
-        this.workspaces.set('T', new WorkspaceNode('T'));
-        this.workspaces.set('B', new WorkspaceNode('B'));
-        this.workspaces.set('M', new WorkspaceNode('M'));
-        for (let i = 1; i < 10; i++) {
-            this.workspaces.set(i, new WorkspaceNode(i));
+        if (!this.enabled) {
+            this.isServiceModeOn = false;
+            this.activeWorkspace = 1;
+            this.workspaces = new Map();
+            this.workspaces.set('S', new WorkspaceNode('S'));
+            this.workspaces.set('T', new WorkspaceNode('T'));
+            this.workspaces.set('B', new WorkspaceNode('B'));
+            this.workspaces.set('M', new WorkspaceNode('M'));
+            for (let i = 1; i < 10; i++) {
+                this.workspaces.set(i, new WorkspaceNode(i));
+            }
+
+            this.floatingWindows = new Array();
+
         }
 
-        this.floatingWindows = new Array();
-
-        this.updateWorkAreas = () => {
-            const area = Main.layoutManager.getWorkAreaForMonitor(0);
-
-            for (const [id, ws] of this.workspaces) {
-                ws.setWorkArea({ x: area.x, y: area.y, width: area.width, height: area.height });
-
-                if (id === this.activeWorkspace) {
-                    ws.show();
-                }
-                else {
-                    ws.hide();
-                }
-            }
-        };
 
         // initial update after current layout pass
-        this._workAreaIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+        this.workAreaIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this.workAreaIdleId = 0;
             this.updateWorkAreas();
             return GLib.SOURCE_REMOVE;
         });
@@ -82,9 +72,7 @@ export default class SeaSpaceExtension extends Extension {
         });
 
         this.focusChangedId = global.display.connect('notify::focus-window', () => {
-            // const win = global.display.get_focus_window();
             const win = global.display.focus_window; // property
-            log(`[SeaSpace] focus changed`);
             if (!win) {
                 return;
             }
@@ -96,18 +84,35 @@ export default class SeaSpaceExtension extends Extension {
             this.windowGrabEnd(metaWindow.get_id());
         });
 
-        this.seedExistingWindows();
+        this.enabled = true;
 
         log(`[SeaSpace] setup done`);
     }
 
+    updateWorkAreas() {
+        const area = Main.layoutManager.getWorkAreaForMonitor(0);
+
+        for (const [id, ws] of this.workspaces) {
+            ws.setWorkArea({ x: area.x, y: area.y, width: area.width, height: area.height });
+
+            if (id === this.activeWorkspace) {
+                ws.show();
+            }
+            else {
+                ws.hide();
+            }
+        }
+    };
+
+
     disable() {
         this.unregisterKeybindings();
         this.settings = null;
+        this._enabled = false;
 
-        if (this._workAreaIdleId) {
-            GLib.source_remove(this._workAreaIdleId);
-            this._workAreaIdleId = 0;
+        if (this.workAreaIdleId) {
+            GLib.source_remove(this.workAreaIdleId);
+            this.workAreaIdleId = 0;
         }
 
         if (this._monitorsChangedId) {
@@ -141,8 +146,8 @@ export default class SeaSpaceExtension extends Extension {
             this.indicator = null;
         }
 
-        this.workspaces?.clear();
-        this.workspaces = null;
+        // this.workspaces?.clear();
+        // this.workspaces = null;
     }
 
     windowGrabEnd(windowId) {
@@ -190,7 +195,7 @@ export default class SeaSpaceExtension extends Extension {
                 b.name,
                 this.settings,
                 Meta.KeyBindingFlags.NONE,
-                Shell.ActionMode.ALL,
+                Shell.ActionMode.NORMAL,
                 () => b.handler(this)
             );
         }
@@ -231,7 +236,7 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
 
-        log(`[SeaSpace] switching to workspace ${workspaceId}`)
+        log(`[SeaSpace]1 switching to workspace ${workspaceId}`)
         this.activeWorkspace = workspaceId;
         if (this.isServiceModeOn) {
             this.label.set_text(String(this.activeWorkspace) + " Se");
@@ -309,15 +314,6 @@ export default class SeaSpaceExtension extends Extension {
             }
         }
         return;
-    }
-
-    seedExistingWindows() {
-        // When enabling extension with existing windows, treat them like "created"
-        for (const actor of global.get_window_actors()) {
-            const w = actor?.meta_window;
-            if (w)
-                this.onWindowCreated(w);
-        }
     }
 
     removeWindowEverywhere(metaWindowId) {
