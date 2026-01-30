@@ -1,5 +1,6 @@
 import Meta from 'gi://Meta';
 const { global } = globalThis;
+import Clutter from 'gi://Clutter';
 
 import { BaseNode } from './BaseNode.js';
 
@@ -80,7 +81,7 @@ export class WindowNode extends BaseNode {
             const flags = win.get_maximized?.();
             if (flags)
                 win.unmaximize(Meta.MaximizeFlags.BOTH);
-        } catch {}
+        } catch { }
 
         try {
             win.move_resize_frame(
@@ -101,11 +102,16 @@ export class WindowNode extends BaseNode {
             return false;
         }
 
+
         try {
-            if (win.minimized)
+            if (win.minimized) {
                 win.unminimize();
+            }
 
             win.activate(global.get_current_time());
+            // set the mouse pointer ot the middle of the window
+            const seat = Clutter.get_default_backend().get_default_seat();
+            seat.warp_pointer(this.workArea.x + this.workArea.width / 2, this.workArea.y + this.workArea.height / 2);
             return true;
         } catch (e) {
             logError(e, `[SeaSpace] activate failed for window ${this.id}`);

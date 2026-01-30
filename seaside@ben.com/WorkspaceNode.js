@@ -520,8 +520,6 @@ export class WorkspaceNode extends BaseNode {
         let x = this.workArea.x;
         for (const p of parts) {
             p.leaf.setWorkArea({ x, y: this.workArea.y, width: p.base, height: totalH });
-
-            log(`[SeaSpace] SHOW(): Setting leaf work area to: ${x} ${this.workArea.y} ${p.base} ${totalH}`);
             p.leaf.show();
             x += p.base;
         }
