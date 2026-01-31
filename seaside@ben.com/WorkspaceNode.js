@@ -433,8 +433,6 @@ export class WorkspaceNode extends BaseNode {
         const n = leafs.length;
         if (n === 0 || !this.workArea) return false;
 
-
-        log(`[SeaSpace] showing window with id ${this.leafs[0].getId()} and handle`);
         this.ensureWeights();
 
         if (this.currentMode === this.modes.STACKING_V

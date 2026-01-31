@@ -1,5 +1,0 @@
-*) dock berücksichtigen
-*) Wenn man 2 workspaces nebeneinander hat, und man hat im e.g.
-linken 2 windows, kann man den linken workspace nicht mit dem rechten thas
-da das move window dings nur im internen workspace funktioniert und nicht im äußeren.
-*) locking und unlocking geht wieder nicht
