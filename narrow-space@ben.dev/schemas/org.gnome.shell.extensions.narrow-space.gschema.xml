@@ -1,90 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema
-      id="org.gnome.shell.extensions.seaspace"
-      path="/org/gnome/shell/extensions/seaspace/">
+      id="org.gnome.shell.extensions.narrow-space"
+      path="/org/gnome/shell/extensions/narrow-space/">
 
     <!-- ========================= -->
     <!-- Switch to workspace -->
     <!-- ========================= -->
 
     <!-- Super + 1..9 -->
-    <key name="seaspace-switch-workspace1" type="as">
-      <default>["&lt;Super&gt;1"]</default>
-      <summary>Switch to workspace 1</summary>
-      <description>Switch to SeaSpace workspace 1</description>
-    </key>
-
-    <key name="seaspace-switch-workspace2" type="as">
+    <key name="narrow-space-switch-workspace1" type="as">
       <default>["&lt;Super&gt;2"]</default>
-      <summary>Switch to workspace 2</summary>
-      <description>Switch to SeaSpace workspace 2</description>
+      <summary>Switch to workspace 1</summary>
+      <description>Switch to narrow-space workspace 1</description>
     </key>
 
-    <key name="seaspace-switch-workspace3" type="as">
+    <key name="narrow-space-switch-workspace2" type="as">
       <default>["&lt;Super&gt;3"]</default>
-      <summary>Switch to workspace 3</summary>
-      <description>Switch to SeaSpace workspace 3</description>
+      <summary>Switch to workspace 2</summary>
+      <description>Switch to narrow-space workspace 2</description>
     </key>
 
-    <key name="seaspace-switch-workspace4" type="as">
+    <key name="narrow-space-switch-workspace3" type="as">
       <default>["&lt;Super&gt;4"]</default>
-      <summary>Switch to workspace 4</summary>
-      <description>Switch to SeaSpace workspace 4</description>
+      <summary>Switch to workspace 3</summary>
+      <description>Switch to narrow-space workspace 3</description>
     </key>
 
-    <key name="seaspace-switch-workspace5" type="as">
+    <key name="narrow-space-switch-workspace4" type="as">
       <default>["&lt;Super&gt;5"]</default>
-      <summary>Switch to workspace 5</summary>
-      <description>Switch to SeaSpace workspace 5</description>
+      <summary>Switch to workspace 4</summary>
+      <description>Switch to narrow-space workspace 4</description>
     </key>
 
-    <key name="seaspace-switch-workspace6" type="as">
+    <key name="narrow-space-switch-workspace5" type="as">
+      <default>["&lt;Super&gt;1"]</default>
+      <summary>Switch to workspace 5</summary>
+      <description>Switch to narrow-space workspace 5</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace6" type="as">
       <default>["&lt;Super&gt;6"]</default>
       <summary>Switch to workspace 6</summary>
-      <description>Switch to SeaSpace workspace 6</description>
+      <description>Switch to narrow-space workspace 6</description>
     </key>
 
-    <key name="seaspace-switch-workspace7" type="as">
+    <key name="narrow-space-switch-workspace7" type="as">
       <default>["&lt;Super&gt;7"]</default>
       <summary>Switch to workspace 7</summary>
-      <description>Switch to SeaSpace workspace 7</description>
+      <description>Switch to narrow-space workspace 7</description>
     </key>
 
-    <key name="seaspace-switch-workspace8" type="as">
+    <key name="narrow-space-switch-workspace8" type="as">
       <default>["&lt;Super&gt;8"]</default>
       <summary>Switch to workspace 8</summary>
-      <description>Switch to SeaSpace workspace 8</description>
+      <description>Switch to narrow-space workspace 8</description>
     </key>
 
-    <key name="seaspace-switch-workspace9" type="as">
+    <key name="narrow-space-switch-workspace9" type="as">
       <default>["&lt;Super&gt;9"]</default>
       <summary>Switch to workspace 9</summary>
-      <description>Switch to SeaSpace workspace 9</description>
+      <description>Switch to narrow-space workspace 9</description>
     </key>
 
-    <key name="seaspace-switch-workspace-s" type="as">
+    <key name="narrow-space-switch-workspace-s" type="as">
       <default>["&lt;Super&gt;s"]</default>
       <summary>Switch workspace (S)</summary>
-      <description>Trigger SeaSpace Super+S</description>
+      <description>Trigger narrow-space Super+S</description>
     </key>
 
-    <key name="seaspace-switch-workspace-b" type="as">
+    <key name="narrow-space-switch-workspace-b" type="as">
       <default>["&lt;Super&gt;b"]</default>
       <summary>Switch workspace (B)</summary>
-      <description>Trigger SeaSpace Super+B</description>
+      <description>Trigger narrow-space Super+B</description>
     </key>
 
-    <key name="seaspace-switch-workspace-m" type="as">
+    <key name="narrow-space-switch-workspace-m" type="as">
       <default>["&lt;Super&gt;m"]</default>
       <summary>Switch workspace (M)</summary>
-      <description>Trigger SeaSpace Super+M</description>
+      <description>Trigger narrow-space Super+M</description>
     </key>
 
-    <key name="seaspace-switch-workspace-t" type="as">
+    <key name="narrow-space-switch-workspace-t" type="as">
       <default>["&lt;Super&gt;t"]</default>
       <summary>Switch workspace (T)</summary>
-      <description>Trigger SeaSpace Super+T</description>
+      <description>Trigger narrow-space Super+T</description>
     </key>
 
     <!-- ========================= -->
@@ -92,79 +92,79 @@
     <!-- ========================= -->
 
     <!-- Super + Shift + 1..9 -->
-    <key name="seaspace-move-window-to-workspace-1" type="as">
+    <key name="narrow-space-move-window-to-workspace-1" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;1"]</default>
       <summary>Move window to workspace 1</summary>
-      <description>Move focused window to SeaSpace workspace 1</description>
+      <description>Move focused window to narrow-space workspace 1</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-2" type="as">
+    <key name="narrow-space-move-window-to-workspace-2" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;2"]</default>
       <summary>Move window to workspace 2</summary>
-      <description>Move focused window to SeaSpace workspace 2</description>
+      <description>Move focused window to narrow-space workspace 2</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-3" type="as">
+    <key name="narrow-space-move-window-to-workspace-3" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;3"]</default>
       <summary>Move window to workspace 3</summary>
-      <description>Move focused window to SeaSpace workspace 3</description>
+      <description>Move focused window to narrow-space workspace 3</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-4" type="as">
+    <key name="narrow-space-move-window-to-workspace-4" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;4"]</default>
       <summary>Move window to workspace 4</summary>
-      <description>Move focused window to SeaSpace workspace 4</description>
+      <description>Move focused window to narrow-space workspace 4</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-5" type="as">
+    <key name="narrow-space-move-window-to-workspace-5" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;5"]</default>
       <summary>Move window to workspace 5</summary>
-      <description>Move focused window to SeaSpace workspace 5</description>
+      <description>Move focused window to narrow-space workspace 5</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-6" type="as">
+    <key name="narrow-space-move-window-to-workspace-6" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;6"]</default>
       <summary>Move window to workspace 6</summary>
-      <description>Move focused window to SeaSpace workspace 6</description>
+      <description>Move focused window to narrow-space workspace 6</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-7" type="as">
+    <key name="narrow-space-move-window-to-workspace-7" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;7"]</default>
       <summary>Move window to workspace 7</summary>
-      <description>Move focused window to SeaSpace workspace 7</description>
+      <description>Move focused window to narrow-space workspace 7</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-8" type="as">
+    <key name="narrow-space-move-window-to-workspace-8" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;8"]</default>
       <summary>Move window to workspace 8</summary>
-      <description>Move focused window to SeaSpace workspace 8</description>
+      <description>Move focused window to narrow-space workspace 8</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-9" type="as">
+    <key name="narrow-space-move-window-to-workspace-9" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;9"]</default>
       <summary>Move window to workspace 9</summary>
-      <description>Move focused window to SeaSpace workspace 9</description>
+      <description>Move focused window to narrow-space workspace 9</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-s" type="as">
+    <key name="narrow-space-move-window-to-workspace-s" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;s"]</default>
       <summary>Move window (S)</summary>
       <description>Move focused window using Super+Shift+S</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-b" type="as">
+    <key name="narrow-space-move-window-to-workspace-b" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;b"]</default>
       <summary>Move window (B)</summary>
       <description>Move focused window using Super+Shift+B</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-m" type="as">
+    <key name="narrow-space-move-window-to-workspace-m" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;m"]</default>
       <summary>Move window (M)</summary>
       <description>Move focused window using Super+Shift+M</description>
     </key>
 
-    <key name="seaspace-move-window-to-workspace-t" type="as">
+    <key name="narrow-space-move-window-to-workspace-t" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;t"]</default>
       <summary>Move window (T)</summary>
       <description>Move focused window using Super+Shift+T</description>
@@ -173,25 +173,25 @@
     <!-- ================================= -->
     <!-- Move focus to window in workspace -->
     <!-- ================================= -->
-    <key name="seaspace-move-focus-left" type="as">
+    <key name="narrow-space-move-focus-left" type="as">
       <default>["&lt;Super&gt;h"]</default>
       <summary>Move focus to window left</summary>
       <description>Move focused window using Super+h</description>
     </key>
 
-    <key name="seaspace-move-focus-right" type="as">
+    <key name="narrow-space-move-focus-right" type="as">
       <default>["&lt;Super&gt;l"]</default>
       <summary>Move focus to window right</summary>
       <description>Move focused window using Super+l</description>
     </key>
 
-    <key name="seaspace-move-focus-up" type="as">
+    <key name="narrow-space-move-focus-up" type="as">
       <default>["&lt;Super&gt;k"]</default>
       <summary>Move focus to window up</summary>
       <description>Move focused window using Super+k</description>
     </key>
 
-    <key name="seaspace-move-focus-down" type="as">
+    <key name="narrow-space-move-focus-down" type="as">
       <default>["&lt;Super&gt;j"]</default>
       <summary>Move focus to window down</summary>
       <description>Move focused window using Super+j</description>
@@ -200,7 +200,7 @@
     <!-- =============================== -->
     <!-- Switch modes within a workspace -->
     <!-- =============================== -->
-    <key name="seaspace-change-workspace-mode" type="as">
+    <key name="narrow-space-change-workspace-mode" type="as">
       <default>["&lt;Super&gt;comma"]</default>
       <summary>Change the mode of the current workspace</summary>
       <description>Modes can be tile (vertical, horizontal) or stacking</description>
@@ -209,13 +209,13 @@
     <!-- ============================== -->
     <!-- Resizing windows or workspaces -->
     <!-- ============================== -->
-    <key name="seaspace-resize-inc" type="as">
+    <key name="narrow-space-resize-inc" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;p"]</default>
       <summary>Resize window +</summary>
       <description>Resize window with super shift + </description>
     </key>
 
-    <key name="seaspace-resize-dec" type="as">
+    <key name="narrow-space-resize-dec" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;o"]</default>
       <summary>Resize window .</summary>
       <description>Resize window with super shift . </description>
@@ -224,28 +224,28 @@
     <!-- ================================= -->
     <!-- Moving windows within a workspace -->
     <!-- ================================= -->
-    <key name="seaspace-move-window-left" type="as">
+    <key name="narrow-space-move-window-left" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;h"]</default>
       <summary>Resize window +</summary>
       <description>Move active window one to the left within the workspace.
       Works only in vertical tiling mode</description>
     </key>
 
-    <key name="seaspace-move-window-right" type="as">
+    <key name="narrow-space-move-window-right" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;l"]</default>
       <summary>Resize window +</summary>
       <description>Move active window one to the right within the workspace.
       Works only in vertical tiling mode</description>
     </key>
 
-    <key name="seaspace-move-window-up" type="as">
+    <key name="narrow-space-move-window-up" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;k"]</default>
       <summary>Resize window +</summary>
       <description>Move active window one up within the workspace.
       Works only in vertical tiling mode</description>
     </key>
 
-    <key name="seaspace-move-window-down" type="as">
+    <key name="narrow-space-move-window-down" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;j"]</default>
       <summary>Resize window +</summary>
       <description>Move active window one to down within the workspace.
@@ -256,9 +256,9 @@
     <!-- Enter/Leave Service mode                       -->
     <!-- In service mode windows can be joined          -->
     <!-- to a workspace (workspace withing workspace)   -->
-    <!-- by using the "seaspace-move-window-" functions -->
+    <!-- by using the "narrow-space-move-window-" functions -->
     <!-- ======================== -->
-    <key name="seaspace-service-mode" type="as">
+    <key name="narrow-space-service-mode" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;x"]</default>
       <summary>Resize window +</summary>
       <description>Enter and leave service mode</description>
@@ -267,7 +267,7 @@
     <!-- ============================================== -->
     <!-- Toggle currently active window floating/tiling -->
     <!-- ============================================== -->
-    <key name="seaspace-toggle-floating" type="as">
+    <key name="narrow-space-toggle-floating" type="as">
       <default>["&lt;Super&gt;&lt;Shift&gt;f"]</default>
       <summary>Resize window +</summary>
       <description>Disable/Enable again the tiling for the focused window </description>

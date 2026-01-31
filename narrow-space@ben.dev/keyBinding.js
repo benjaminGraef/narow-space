@@ -2,31 +2,31 @@
 export const BINDINGS = [
   // move to workspace bindings
   ...Array.from({ length: 9 }, (_, i) => ({
-    name: `seaspace-switch-workspace${i + 1}`,
+    name: `narrow-space-switch-workspace${i + 1}`,
     handler(ext) {
       ext.switchToWorkspace(i + 1);
     },
   })),
   {
-    name: 'seaspace-switch-workspace-s',
+    name: 'narrow-space-switch-workspace-s',
     handler(ext) {
       ext.switchToWorkspace('S');
     },
   },
   {
-    name: 'seaspace-switch-workspace-b',
+    name: 'narrow-space-switch-workspace-b',
     handler(ext) {
       ext.switchToWorkspace('B');
     },
   },
   {
-    name: 'seaspace-switch-workspace-m',
+    name: 'narrow-space-switch-workspace-m',
     handler(ext) {
       ext.switchToWorkspace('M');
     },
   },
   {
-    name: 'seaspace-switch-workspace-t',
+    name: 'narrow-space-switch-workspace-t',
     handler(ext) {
       ext.switchToWorkspace('T');
     },
@@ -34,31 +34,31 @@ export const BINDINGS = [
 
   // move window to workspace bindings
   ...Array.from({ length: 9 }, (_, i) => ({
-    name: `seaspace-move-window-to-workspace-${i + 1}`,
+    name: `narrow-space-move-window-to-workspace-${i + 1}`,
     handler(ext) {
       ext.moveWindowToWorkspace(i + 1);
     },
   })),
   {
-    name: 'seaspace-move-window-to-workspace-s',
+    name: 'narrow-space-move-window-to-workspace-s',
     handler(ext) {
       ext.moveWindowToWorkspace('S');
     },
   },
   {
-    name: 'seaspace-move-window-to-workspace-b',
+    name: 'narrow-space-move-window-to-workspace-b',
     handler(ext) {
       ext.moveWindowToWorkspace('B');
     },
   },
   {
-    name: 'seaspace-move-window-to-workspace-m',
+    name: 'narrow-space-move-window-to-workspace-m',
     handler(ext) {
       ext.moveWindowToWorkspace('M');
     },
   },
   {
-    name: 'seaspace-move-window-to-workspace-t',
+    name: 'narrow-space-move-window-to-workspace-t',
     handler(ext) {
       ext.moveWindowToWorkspace('T');
     },
@@ -66,79 +66,79 @@ export const BINDINGS = [
 
   // move focus in workspace
   {
-    name: 'seaspace-move-focus-left',
+    name: 'narrow-space-move-focus-left',
     handler(ext) {
       ext.moveFocus('left');
     },
   },
   {
-    name: 'seaspace-move-focus-right',
+    name: 'narrow-space-move-focus-right',
     handler(ext) {
       ext.moveFocus('right');
     },
   },
   {
-    name: 'seaspace-move-focus-up',
+    name: 'narrow-space-move-focus-up',
     handler(ext) {
       ext.moveFocus('up');
     },
   },
   {
-    name: 'seaspace-move-focus-down',
+    name: 'narrow-space-move-focus-down',
     handler(ext) {
       ext.moveFocus('down');
     },
   },
   {
-    name: 'seaspace-change-workspace-mode',
+    name: 'narrow-space-change-workspace-mode',
     handler(ext) {
       ext.changeWorkspaceMode();
     },
   },
   {
-    name: 'seaspace-resize-inc',
+    name: 'narrow-space-resize-inc',
     handler(ext) {
       ext.resizeWindow('+');
     },
   },
   {
-    name: 'seaspace-resize-dec',
+    name: 'narrow-space-resize-dec',
     handler(ext) {
       ext.resizeWindow('-');
     },
   },
   {
-    name: 'seaspace-move-window-left',
+    name: 'narrow-space-move-window-left',
     handler(ext) {
       ext.moveWindow('left');
     },
   },
   {
-    name: 'seaspace-move-window-right',
+    name: 'narrow-space-move-window-right',
     handler(ext) {
       ext.moveWindow('right');
     },
   },
   {
-    name: 'seaspace-move-window-up',
+    name: 'narrow-space-move-window-up',
     handler(ext) {
       ext.moveWindow('up');
     },
   },
   {
-    name: 'seaspace-move-window-down',
+    name: 'narrow-space-move-window-down',
     handler(ext) {
       ext.moveWindow('down');
     },
   },
   {
-    name: 'seaspace-service-mode',
+    name: 'narrow-space-service-mode',
     handler(ext) {
       ext.serviceMode();
     },
   },
   {
-    name: 'seaspace-toggle-floating',
+    name: 'narrow-space-toggle-floating',
     handler(ext) {
       ext.toggleFloating();
     },

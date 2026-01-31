@@ -8,6 +8,6 @@
     "48"
   ],
   "version": 1,
-  "url": "todo"
-  
+  "url": "todo",
+  "settings-schema": "org.gnome.shell.extensions.narrow-space"
 }

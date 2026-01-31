@@ -12,6 +12,8 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { WorkspaceNode } from './WorkspaceNode.js';
 import { WindowNode } from './WindowNode.js';
 import { BINDINGS } from './keyBinding.js';
+import { KeybindingConfigLoader } from './KeybindingConfigLoader.js';
+
 
 export default class SeaSpaceExtension extends Extension {
     enable() {
@@ -39,7 +41,7 @@ export default class SeaSpaceExtension extends Extension {
         Main.panel.addToStatusArea('seaspace-indicator', this.indicator);
 
         // keybindings 
-        this.settings = this.getSettings('org.gnome.shell.extensions.seaspace');
+        this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
         this.registerKeybindings();
 
         if (!this.enabled) {
@@ -58,15 +60,22 @@ export default class SeaSpaceExtension extends Extension {
 
         }
 
+        // this.settings.set_strv(
+        //     'seaspace-switch-workspace1',
+        //     ['<Super>1', '<Alt>n'] //super +1 + or alt + n
+        // );
 
-        // initial update after current layout pass
+        this.keyConfig = new KeybindingConfigLoader(this.settings);
+        this.keyConfig.load();
+
+
+        // initial update after current layout pass TODO: do i need this ?
         this.workAreaIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             this.workAreaIdleId = 0;
             this.updateWorkAreas();
             return GLib.SOURCE_REMOVE;
         });
 
-        // keep area in sync if monitors/workareas change
         // this._monitorsChangedId = Main.layoutManager.connect('monitors-changed', () => this.updateWorkAreas());
         // this._workareasChangedId = Main.layoutManager.connect('workareas-changed', () => this.updateWorkAreas());
 
