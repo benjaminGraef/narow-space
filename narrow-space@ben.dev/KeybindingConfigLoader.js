@@ -13,7 +13,7 @@ export class KeybindingConfigLoader {
     }
 
     log(msg) {
-        console.log(`[SeaSpace] ${msg}`);
+        console.log(`[narrow-space] ${msg}`);
     }
 
     load() {

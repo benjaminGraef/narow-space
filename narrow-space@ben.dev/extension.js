@@ -15,16 +15,16 @@ import { BINDINGS } from './keyBinding.js';
 import { KeybindingConfigLoader } from './KeybindingConfigLoader.js';
 
 
-export default class SeaSpaceExtension extends Extension {
+export default class narrow-spaceExtension extends Extension {
     enable() {
         // panel indicator
-        this.indicator = new PanelMenu.Button(0.0, 'SeaSpace');
+        this.indicator = new PanelMenu.Button(0.0, 'narrow-space');
         this.label = new St.Label({
             text: '1',
             y_align: Clutter.ActorAlign.CENTER,
         });
         this.indicator.add_child(this.label);
-        this.indicator.menu.addMenuItem(new PopupMenu.PopupMenuItem('SeaSpace', { reactive: false }));
+        this.indicator.menu.addMenuItem(new PopupMenu.PopupMenuItem('narrow-space', { reactive: false }));
         this.indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         this.paused = false;
@@ -38,7 +38,7 @@ export default class SeaSpaceExtension extends Extension {
         });
 
         this.indicator.menu.addMenuItem(this.pauseItem);
-        Main.panel.addToStatusArea('seaspace-indicator', this.indicator);
+        Main.panel.addToStatusArea('narrow-space-indicator', this.indicator);
 
         // keybindings 
         this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
@@ -61,7 +61,7 @@ export default class SeaSpaceExtension extends Extension {
         }
 
         // this.settings.set_strv(
-        //     'seaspace-switch-workspace1',
+        //     'narrow-space-switch-workspace1',
         //     ['<Super>1', '<Alt>n'] //super +1 + or alt + n
         // );
 
@@ -98,7 +98,7 @@ export default class SeaSpaceExtension extends Extension {
 
         this.enabled = true;
 
-        log(`[SeaSpace] setup done`);
+        log(`[narrow-space] setup done`);
     }
 
     updateWorkAreas() {
@@ -178,7 +178,7 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
 
-        log(`[SeaSpace] window grab released redrawing`);
+        log(`[narrow-space] window grab released redrawing`);
         this.workspaces.get(this.activeWorkspace)?.show();
     }
 
@@ -202,7 +202,7 @@ export default class SeaSpaceExtension extends Extension {
         } else {
             if (this.workspaces.get(this.activeWorkspace).removeLeaf(metaWindow.get_id())) {
 
-                log(`[SeaSpace] adding window ${metaWindow} to list`);
+                log(`[narrow-space] adding window ${metaWindow} to list`);
                 this.floatingWindows.push(metaWindow.get_id());
                 metaWindow.activate(global.get_current_time());
             }
@@ -268,7 +268,7 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
 
-        log(`[SeaSpace]1 switching to workspace ${workspaceId}`)
+        log(`[narrow-space]1 switching to workspace ${workspaceId}`)
         this.activeWorkspace = workspaceId;
         if (this.isServiceModeOn) {
             this.label.set_text(String(this.activeWorkspace) + " Se");
@@ -307,13 +307,13 @@ export default class SeaSpaceExtension extends Extension {
             return;
         }
         if (workspaceId === this.activeWorkspace) {
-            log(`[SeaSpace] window already in this workspace`);
+            log(`[narrow-space] window already in this workspace`);
             return;
         }
 
         const activeWin = this.getActiveWindow();
         if (!activeWin) {
-            log('[SeaSpace] no focused window');
+            log('[narrow-space] no focused window');
             return;
         }
 
@@ -323,13 +323,13 @@ export default class SeaSpaceExtension extends Extension {
         const toWs = this.workspaces.get(workspaceId);
 
         if (!fromWs || !toWs) {
-            log(`[SeaSpace] workspace model missing (from=${this.activeWorkspace}, to=${workspaceId})`);
+            log(`[narrow-space] workspace model missing (from=${this.activeWorkspace}, to=${workspaceId})`);
             return;
         }
 
         const wasPresent = fromWs.removeLeaf(activeWinId, /*show*/ false);
         if (!wasPresent) {
-            log(`[SeaSpace] window ${activeWinId} not found in workspace ${this.activeWorkspace}`);
+            log(`[narrow-space] window ${activeWinId} not found in workspace ${this.activeWorkspace}`);
             return;
         }
 

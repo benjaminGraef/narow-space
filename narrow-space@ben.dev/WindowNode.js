@@ -45,7 +45,7 @@ export class WindowNode extends BaseNode {
         }
 
 
-        log(`[SeaSpace] Could not resolve window`);
+        log(`[narrow-space] Could not resolve window`);
         this.cachedWindow = null;
         return null;
     }
@@ -95,7 +95,7 @@ export class WindowNode extends BaseNode {
                 area.height
             );
         } catch (e) {
-            logError(e, `[SeaSpace] move_resize_frame failed for window ${this.id}`);
+            logError(e, `[narrow-space] move_resize_frame failed for window ${this.id}`);
         }
     }
 
@@ -117,7 +117,7 @@ export class WindowNode extends BaseNode {
             seat.warp_pointer(this.workArea.x + this.workArea.width / 2, this.workArea.y + this.workArea.height / 2);
             return true;
         } catch (e) {
-            logError(e, `[SeaSpace] activate failed for window ${this.id}`);
+            logError(e, `[narrow-space] activate failed for window ${this.id}`);
             return false;
         }
     }
