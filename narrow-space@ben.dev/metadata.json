@@ -1,0 +1,13 @@
+{
+  "name": "narrow-space",
+  "description": "A tiling window manager on top of gnome",
+  "uuid": "narrow-space@ben.dev",
+  "shell-version": [
+    "46",
+    "47",
+    "48"
+  ],
+  "version": 1,
+  "url": "todo"
+  
+}
