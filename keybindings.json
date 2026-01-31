@@ -1,0 +1,52 @@
+
+{
+  "narrow-space-switch-workspace1": ["<Super>1"],
+  "narrow-space-switch-workspace2": ["<Super>2"],
+  "narrow-space-switch-workspace3": ["<Super>3"],
+  "narrow-space-switch-workspace4": ["<Super>4"],
+  "narrow-space-switch-workspace5": ["<Super>5"],
+  "narrow-space-switch-workspace6": ["<Super>6"],
+  "narrow-space-switch-workspace7": ["<Super>7"],
+  "narrow-space-switch-workspace8": ["<Super>8"],
+  "narrow-space-switch-workspace9": ["<Super>9"],
+
+  "narrow-space-switch-workspace-s": ["<Super>s"],
+  "narrow-space-switch-workspace-b": ["<Super>b"],
+  "narrow-space-switch-workspace-m": ["<Super>m"],
+  "narrow-space-switch-workspace-t": ["<Super>t"],
+
+  "narrow-space-move-window-to-workspace-1": ["<Super><Shift>1"],
+  "narrow-space-move-window-to-workspace-2": ["<Super><Shift>2"],
+  "narrow-space-move-window-to-workspace-3": ["<Super><Shift>3"],
+  "narrow-space-move-window-to-workspace-4": ["<Super><Shift>4"],
+  "narrow-space-move-window-to-workspace-5": ["<Super><Shift>5"],
+  "narrow-space-move-window-to-workspace-6": ["<Super><Shift>6"],
+  "narrow-space-move-window-to-workspace-7": ["<Super><Shift>7"],
+  "narrow-space-move-window-to-workspace-8": ["<Super><Shift>8"],
+  "narrow-space-move-window-to-workspace-9": ["<Super><Shift>9"],
+
+  "narrow-space-move-window-to-workspace-s": ["<Super><Shift>s"],
+  "narrow-space-move-window-to-workspace-b": ["<Super><Shift>b"],
+  "narrow-space-move-window-to-workspace-m": ["<Super><Shift>m"],
+  "narrow-space-move-window-to-workspace-t": ["<Super><Shift>t"],
+
+  "narrow-space-move-focus-left": ["<Super>h"],
+  "narrow-space-move-focus-right": ["<Super>l"],
+  "narrow-space-move-focus-up": ["<Super>k"],
+  "narrow-space-move-focus-down": ["<Super>j"],
+
+  "narrow-space-change-workspace-mode": ["<Super>comma"],
+
+  "narrow-space-resize-inc": ["<Super><Shift>p"],
+  "narrow-space-resize-dec": ["<Super><Shift>o"],
+
+  "narrow-space-move-window-left": ["<Super><Shift>h"],
+  "narrow-space-move-window-right": ["<Super><Shift>l"],
+  "narrow-space-move-window-up": ["<Super><Shift>k"],
+  "narrow-space-move-window-down": ["<Super><Shift>j"],
+
+  "narrow-space-service-mode": ["<Super><Shift>x"],
+  "narrow-space-toggle-floating": ["<Super><Shift>f"]
+}
+
+
