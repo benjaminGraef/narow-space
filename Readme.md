@@ -5,6 +5,7 @@ This is a tiling window manager that runs on top of Gnome, as a gnome extension.
 * Tree based tiling window management
 * Own implementation of workspaces, not relying on the gnome nativ workspaces. When using the term workspace, I am refering to narros-space workspaces from now on.
 * Custom keybinding configuration
+* Workspace indication on top left panel + pause toggle
 
 ## Features yet to come
 * Multi monitor support.

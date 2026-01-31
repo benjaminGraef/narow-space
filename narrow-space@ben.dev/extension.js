@@ -15,7 +15,7 @@ import { BINDINGS } from './keyBinding.js';
 import { KeybindingConfigLoader } from './KeybindingConfigLoader.js';
 
 
-export default class narrow-spaceExtension extends Extension {
+export default class narrowSpaceExtension extends Extension {
     enable() {
         // panel indicator
         this.indicator = new PanelMenu.Button(0.0, 'narrow-space');
@@ -60,31 +60,16 @@ export default class narrow-spaceExtension extends Extension {
 
         }
 
-        // this.settings.set_strv(
-        //     'narrow-space-switch-workspace1',
-        //     ['<Super>1', '<Alt>n'] //super +1 + or alt + n
-        // );
-
         this.keyConfig = new KeybindingConfigLoader(this.settings);
         this.keyConfig.load();
 
-
-        // initial update after current layout pass TODO: do i need this ?
-        this.workAreaIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            this.workAreaIdleId = 0;
-            this.updateWorkAreas();
-            return GLib.SOURCE_REMOVE;
-        });
-
-        // this._monitorsChangedId = Main.layoutManager.connect('monitors-changed', () => this.updateWorkAreas());
-        // this._workareasChangedId = Main.layoutManager.connect('workareas-changed', () => this.updateWorkAreas());
 
         this.windowCreatedId = global.display.connect('window-created', (_display, metaWindow) => {
             this.onWindowCreated(metaWindow);
         });
 
         this.focusChangedId = global.display.connect('notify::focus-window', () => {
-            const win = global.display.focus_window; // property
+            const win = global.display.focus_window;
             if (!win) {
                 return;
             }
@@ -97,8 +82,6 @@ export default class narrow-spaceExtension extends Extension {
         });
 
         this.enabled = true;
-
-        log(`[narrow-space] setup done`);
     }
 
     updateWorkAreas() {
@@ -160,9 +143,6 @@ export default class narrow-spaceExtension extends Extension {
             this.indicator.destroy();
             this.indicator = null;
         }
-
-        // this.workspaces?.clear();
-        // this.workspaces = null;
     }
 
     windowGrabEnd(windowId) {
@@ -178,7 +158,6 @@ export default class narrow-spaceExtension extends Extension {
             return;
         }
 
-        log(`[narrow-space] window grab released redrawing`);
         this.workspaces.get(this.activeWorkspace)?.show();
     }
 
@@ -201,8 +180,6 @@ export default class narrow-spaceExtension extends Extension {
             this.floatingWindows.splice(idx, 1);
         } else {
             if (this.workspaces.get(this.activeWorkspace).removeLeaf(metaWindow.get_id())) {
-
-                log(`[narrow-space] adding window ${metaWindow} to list`);
                 this.floatingWindows.push(metaWindow.get_id());
                 metaWindow.activate(global.get_current_time());
             }
@@ -268,7 +245,6 @@ export default class narrow-spaceExtension extends Extension {
             return;
         }
 
-        log(`[narrow-space]1 switching to workspace ${workspaceId}`)
         this.activeWorkspace = workspaceId;
         if (this.isServiceModeOn) {
             this.label.set_text(String(this.activeWorkspace) + " Se");
@@ -407,9 +383,6 @@ export default class narrow-spaceExtension extends Extension {
         if (metaWindow.is_override_redirect?.()) {
             return false;
         }
-
-        // if (metaWindow.is_on_all_workspaces?.())
-        //     return false;
 
         return true;
     }

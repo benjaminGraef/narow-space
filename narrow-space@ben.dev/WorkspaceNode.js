@@ -76,7 +76,6 @@ export class WorkspaceNode extends BaseNode {
         const totalPx = isVertical ? this.workArea.width : this.workArea.height;
         const weights = isVertical ? this._weightsX : this._weightsY;
 
-        // Make sure weights exist
         this.normalizeMissingWeights(leafs, weights);
 
         // Choose neighbor index: prefer right/down, else left/up
@@ -187,8 +186,6 @@ export class WorkspaceNode extends BaseNode {
     }
 
     joinWindow(direction) {
-        log(`[narrow-space] joining window in direction: ${direction}`);
-
         if (this.currentMode === this.modes.STACKING_V
             || this.currentMode === this.modes.STACKING_H) {
             return;
@@ -209,7 +206,6 @@ export class WorkspaceNode extends BaseNode {
 
         // Create nested workspace that will hold both leaves
         const nested = new WorkspaceNode(`join:${this.getId()}:${Date.now()}`);
-        log(`[narrow-space] Settingn nested work area to: ${this.workArea.x} ${this.workArea.y} ${this.workArea.width} ${this.workArea.height}`);
         nested.setWorkArea(this.workArea);
         nested.addLeaf(otherLeaf);
         nested.addLeaf(this.focusedLeaf);
