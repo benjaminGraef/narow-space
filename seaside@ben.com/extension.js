@@ -30,6 +30,9 @@ export default class SeaSpaceExtension extends Extension {
         this.pauseItem = new PopupMenu.PopupSwitchMenuItem('Paused', this.paused);
         this.pauseItem.connect('toggled', (item, state) => {
             this.paused = state;
+            if (!this.paused) {
+                this.updateWorkAreas();
+            }
         });
 
         this.indicator.menu.addMenuItem(this.pauseItem);
