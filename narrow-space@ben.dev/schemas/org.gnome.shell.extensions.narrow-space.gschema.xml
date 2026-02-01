@@ -10,31 +10,31 @@
 
     <!-- Super + 1..9 -->
     <key name="narrow-space-switch-workspace1" type="as">
-      <default>["&lt;Super&gt;2"]</default>
+      <default>["&lt;Super&gt;1"]</default>
       <summary>Switch to workspace 1</summary>
       <description>Switch to narrow-space workspace 1</description>
     </key>
 
     <key name="narrow-space-switch-workspace2" type="as">
-      <default>["&lt;Super&gt;3"]</default>
+      <default>["&lt;Super&gt;2"]</default>
       <summary>Switch to workspace 2</summary>
       <description>Switch to narrow-space workspace 2</description>
     </key>
 
     <key name="narrow-space-switch-workspace3" type="as">
-      <default>["&lt;Super&gt;4"]</default>
+      <default>["&lt;Super&gt;3"]</default>
       <summary>Switch to workspace 3</summary>
       <description>Switch to narrow-space workspace 3</description>
     </key>
 
     <key name="narrow-space-switch-workspace4" type="as">
-      <default>["&lt;Super&gt;5"]</default>
+      <default>["&lt;Super&gt;4"]</default>
       <summary>Switch to workspace 4</summary>
       <description>Switch to narrow-space workspace 4</description>
     </key>
 
     <key name="narrow-space-switch-workspace5" type="as">
-      <default>["&lt;Super&gt;1"]</default>
+      <default>["&lt;Super&gt;5"]</default>
       <summary>Switch to workspace 5</summary>
       <description>Switch to narrow-space workspace 5</description>
     </key>

@@ -31,7 +31,18 @@ Narrow-space comes with default keybindings for its functions (for functions see
     }
 This configure Super + 1 key to trigger the function `switch-workspace1`, which switches to workspace 1.
 
-<b>Important: If on your system, the configured keybinding is already used for something else, narrow-space will not pick it up and therefore not function correctly! Check your keybindings under `Settings > Keyboard > View and Customize Shortcuts`</b>
+<b>Important: If on your system, the configured keybinding is already used for something else, narrow-space will not pick it up and therefore not function correctly! Check your keybindings under `Settings > Keyboard > View and Customize Shortcuts`</b>. Furthermore on Ubuntu the super + 0-9 keys are used to launch apps from the dock, you can disable that with:
+
+    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    gsettings set org.gnome.shell.keybindings switch-to-application-1 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-2 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-3 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-4 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-5 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-6 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-7 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-8 []
+    gsettings set org.gnome.shell.keybindings switch-to-application-9 []
 
 ## Supported Functions and Default Keybindings
 
