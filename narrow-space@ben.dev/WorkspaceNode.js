@@ -242,6 +242,7 @@ export class WorkspaceNode extends BaseNode {
                     if (leaf.getNumberOfLeafs() === 0) {
                         // collapse nested workspace
                         this.leafs.splice(i, 1);
+                        this.focusedLeaf = this.lastFocusedLeaf;
                         this.show();
                     }
                     return true;
@@ -255,10 +256,6 @@ export class WorkspaceNode extends BaseNode {
         const wasFocused = removed === this.focusedLeaf;
 
         this.leafs.splice(idx, 1);
-
-        // if (show) {
-        //     removed.hide?.();
-        // }
 
         if (removed.getParent?.() === this) {
             removed.setParent?.(null);
@@ -336,7 +333,7 @@ export class WorkspaceNode extends BaseNode {
                 this.focusedLeaf = this.leafs[0]
             }
         }
-        this.focusedLeaf.focus();
+        this.focusedLeaf?.focus();
     }
 
     // returns true if the moveFocus was performed, false otherwise
