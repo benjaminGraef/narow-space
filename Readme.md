@@ -1,9 +1,9 @@
 # Narrow-space
-This is a tiling window manager that runs on top of Gnome, as a gnome extension. It is heavily based on the Mac OS window manager called aerospace (https://github.com/nikitabobko/AeroSpace), which is in turn inspired by the i3 window manager.
+This is a tiling window manager that runs on top of Gnome, as a gnome extension. It is heavily based on the macOS window manager called aerospace (https://github.com/nikitabobko/AeroSpace), which is in turn inspired by the i3 window manager.
 
 ## Features currently working
 * Tree based tiling window management
-* Own implementation of workspaces, not relying on the gnome nativ workspaces. When using the term workspace, I am refering to narros-space workspaces from now on.
+* Own implementation of workspaces, not relying on the gnome nativ workspaces. When using the term workspace, I am referring to narrow-space workspaces from now on.
 * Custom keybinding configuration
 * Workspace indication on top left panel + pause toggle
 
@@ -13,14 +13,14 @@ This is a tiling window manager that runs on top of Gnome, as a gnome extension.
 * More stability
 
 ## Setup and configuration
-To setup, just install the gnome extension and enable it. Only windows that are openend once the extension is enabled, will be managed by it.
+To setup, just install the gnome extension and enable it. Only windows that are opened once the extension is enabled, will be managed by it.
 
 The switching between workspaces happens by minimizing all windows not in the current workspace. This will show the minimize animation in gnome, which is annoying. To avoid that disable the animations under `Settings > Accessibility > Seeing > Reduce Animation to ON`. This will make the switching much smoother.
 
 For now there is not really any configuration that can be done to this extension. I want to add a configuration file that can customize some behaviour of the extension at some point.
 
 ## Keybindings
-Narrow-space comes with default keybindings for its functions (for functions see below). If you want to change them, there is the possiblity to create a config file under:
+Narrow-space comes with default keybindings for its functions (for functions see below). If you want to change them, there is the possibility to create a config file under:
 
     /home/yourUserName/.config/narrow-space/keybindings.json
  
@@ -118,7 +118,7 @@ When in the service mode, indicated by the letters `Se` next to the current work
 | narrow-space-move-window-down | Super + Shift + J | Join the focused window with the window **below**, creating a new workspace inside the current workspace |
 
 ## Nested Workspaces
-Each workspace has a single tiling/layout strategy. Tiling vertical, horizontal or stacking vertical, horizontal. If you want to have two different layout strategies within one workspace, it is possible by creating a workspace within a workspace. This can be done by switching into the service mode and then joining the window with the window in the desired direction (narrow-space-move-window-... function). This will create a workspace containing the jouined windows. Do not forget to leave the service mode again.
+Each workspace has a single tiling/layout strategy. Tiling vertical, horizontal or stacking vertical, horizontal. If you want to have two different layout strategies within one workspace, it is possible by creating a workspace within a workspace. This can be done by switching into the service mode and then joining the window with the window in the desired direction (narrow-space-move-window-... function). This will create a workspace containing the joined windows. Do not forget to leave the service mode again.
 
 ## Known Limitations
 Some windows are not automatically tiled when they are started. I think the reason is that they try to restore some previous state they had and mess with the narrow-space resizing that gets triggered when a new window is created. Just switch to another workspace and then switch back and the tiling will work.
