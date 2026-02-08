@@ -1,68 +1,20 @@
-
+export const MAX_NMB_OF_WORKSPACES = 16;
 export const BINDINGS = [
   // move to workspace bindings
-  ...Array.from({ length: 9 }, (_, i) => ({
-    name: `narrow-space-switch-workspace${i + 1}`,
+  ...Array.from({ length: MAX_NMB_OF_WORKSPACES }, (_, i) => ({
+    name: `narrow-space-switch-workspace-${i + 1}`,
     handler(ext) {
       ext.switchToWorkspace(i + 1);
     },
   })),
-  {
-    name: 'narrow-space-switch-workspace-s',
-    handler(ext) {
-      ext.switchToWorkspace('S');
-    },
-  },
-  {
-    name: 'narrow-space-switch-workspace-b',
-    handler(ext) {
-      ext.switchToWorkspace('B');
-    },
-  },
-  {
-    name: 'narrow-space-switch-workspace-m',
-    handler(ext) {
-      ext.switchToWorkspace('M');
-    },
-  },
-  {
-    name: 'narrow-space-switch-workspace-t',
-    handler(ext) {
-      ext.switchToWorkspace('T');
-    },
-  },
 
   // move window to workspace bindings
-  ...Array.from({ length: 9 }, (_, i) => ({
+  ...Array.from({ length: MAX_NMB_OF_WORKSPACES }, (_, i) => ({
     name: `narrow-space-move-window-to-workspace-${i + 1}`,
     handler(ext) {
       ext.moveWindowToWorkspace(i + 1);
     },
   })),
-  {
-    name: 'narrow-space-move-window-to-workspace-s',
-    handler(ext) {
-      ext.moveWindowToWorkspace('S');
-    },
-  },
-  {
-    name: 'narrow-space-move-window-to-workspace-b',
-    handler(ext) {
-      ext.moveWindowToWorkspace('B');
-    },
-  },
-  {
-    name: 'narrow-space-move-window-to-workspace-m',
-    handler(ext) {
-      ext.moveWindowToWorkspace('M');
-    },
-  },
-  {
-    name: 'narrow-space-move-window-to-workspace-t',
-    handler(ext) {
-      ext.moveWindowToWorkspace('T');
-    },
-  },
 
   // move focus in workspace
   {

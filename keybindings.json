@@ -1,19 +1,22 @@
 
 {
-  "narrow-space-switch-workspace1": ["<Super>1"],
-  "narrow-space-switch-workspace2": ["<Super>2"],
-  "narrow-space-switch-workspace3": ["<Super>3"],
-  "narrow-space-switch-workspace4": ["<Super>4"],
-  "narrow-space-switch-workspace5": ["<Super>5"],
-  "narrow-space-switch-workspace6": ["<Super>6"],
-  "narrow-space-switch-workspace7": ["<Super>7"],
-  "narrow-space-switch-workspace8": ["<Super>8"],
-  "narrow-space-switch-workspace9": ["<Super>9"],
 
-  "narrow-space-switch-workspace-s": ["<Super>s"],
-  "narrow-space-switch-workspace-b": ["<Super>b"],
-  "narrow-space-switch-workspace-m": ["<Super>m"],
-  "narrow-space-switch-workspace-t": ["<Super>t"],
+  "define-workspace": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "S", "B", "M", "T"],
+  
+  "narrow-space-switch-workspace-1": ["<Super>1"],
+  "narrow-space-switch-workspace-2": ["<Super>2"],
+  "narrow-space-switch-workspace-3": ["<Super>3"],
+  "narrow-space-switch-workspace-4": ["<Super>4"],
+  "narrow-space-switch-workspace-5": ["<Super>5"],
+  "narrow-space-switch-workspace-6": ["<Super>6"],
+  "narrow-space-switch-workspace-7": ["<Super>7"],
+  "narrow-space-switch-workspace-8": ["<Super>8"],
+  "narrow-space-switch-workspace-9": ["<Super>9"],
+
+  "narrow-space-switch-workspace-10": ["<Super>s"],
+  "narrow-space-switch-workspace-11": ["<Super>b"],
+  "narrow-space-switch-workspace-12": ["<Super>m"],
+  "narrow-space-switch-workspace-13": ["<Super>t"],
 
   "narrow-space-move-window-to-workspace-1": ["<Super><Shift>1"],
   "narrow-space-move-window-to-workspace-2": ["<Super><Shift>2"],
@@ -25,10 +28,10 @@
   "narrow-space-move-window-to-workspace-8": ["<Super><Shift>8"],
   "narrow-space-move-window-to-workspace-9": ["<Super><Shift>9"],
 
-  "narrow-space-move-window-to-workspace-s": ["<Super><Shift>s"],
-  "narrow-space-move-window-to-workspace-b": ["<Super><Shift>b"],
-  "narrow-space-move-window-to-workspace-m": ["<Super><Shift>m"],
-  "narrow-space-move-window-to-workspace-t": ["<Super><Shift>t"],
+  "narrow-space-move-window-to-workspace-10": ["<Super><Shift>s"],
+  "narrow-space-move-window-to-workspace-11": ["<Super><Shift>b"],
+  "narrow-space-move-window-to-workspace-12": ["<Super><Shift>m"],
+  "narrow-space-move-window-to-workspace-13": ["<Super><Shift>t"],
 
   "narrow-space-move-focus-left": ["<Super>h"],
   "narrow-space-move-focus-right": ["<Super>l"],

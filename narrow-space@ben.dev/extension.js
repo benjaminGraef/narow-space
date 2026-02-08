@@ -40,28 +40,25 @@ export default class narrowSpaceExtension extends Extension {
         this.indicator.menu.addMenuItem(this.pauseItem);
         Main.panel.addToStatusArea('narrow-space-indicator', this.indicator);
 
+        log(`[narrow-space] enabling`);
         // keybindings 
         this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
         this.registerKeybindings();
 
         if (!this.enabled) {
             this.isServiceModeOn = false;
-            this.activeWorkspace = 1;
             this.workspaces = new Map();
-            this.workspaces.set('S', new WorkspaceNode('S'));
-            this.workspaces.set('T', new WorkspaceNode('T'));
-            this.workspaces.set('B', new WorkspaceNode('B'));
-            this.workspaces.set('M', new WorkspaceNode('M'));
-            for (let i = 1; i < 10; i++) {
-                this.workspaces.set(i, new WorkspaceNode(i));
-            }
-
             this.floatingWindows = new Array();
 
         }
 
-        this.keyConfig = new KeybindingConfigLoader(this.settings);
-        this.keyConfig.load();
+        this.keyConfig = new KeybindingConfigLoader(this.settings, this.workspaces);
+        this.keyConfig.load(!this.enabled);
+
+        const firstEntry = this.workspaces.entries().next().value;
+        if (firstEntry) {
+            this.activeWorkspace = firstEntry[1].getId();
+        }
 
 
         this.windowCreatedId = global.display.connect('window-created', (_display, metaWindow) => {
@@ -235,21 +232,22 @@ export default class narrowSpaceExtension extends Extension {
             return;
         }
 
+        const wsRealId = this.workspaces.get(workspaceId).getId();
         if (workspaceId === this.activeWorkspace) {
             if (this.isServiceModeOn) {
-                this.label.set_text(`${workspaceId} Se`);
+                this.label.set_text(String(wsRealId) + " Se");
             }
             else {
-                this.label.set_text(String(workspaceId));
+                this.label.set_text(String(wsRealId));
             }
             return;
         }
 
         this.activeWorkspace = workspaceId;
         if (this.isServiceModeOn) {
-            this.label.set_text(String(this.activeWorkspace) + " Se");
+            this.label.set_text(String(wsRealId) + " Se");
         } else {
-            this.label.set_text(String(this.activeWorkspace));
+            this.label.set_text(String(wsRealId));
         }
         this.updateWorkAreas();
     }
