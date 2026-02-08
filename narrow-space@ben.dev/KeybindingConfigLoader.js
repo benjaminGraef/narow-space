@@ -32,7 +32,6 @@ export class KeybindingConfigLoader {
                     for (const workspaceId of workspaces) {
                         this.workspaces.set(i, new WorkspaceNode(workspaceId));
                         i++;
-                        this.log(`defined workspace ${workspaceId}`);
                         if (i == MAX_NMB_OF_WORKSPACES) {
                             break;
                         }

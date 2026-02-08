@@ -42,7 +42,8 @@ export default class narrowSpaceExtension extends Extension {
 
         log(`[narrow-space] enabling`);
         // keybindings 
-        this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
+        // this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
+        this.settings = this.getSettings();
         this.registerKeybindings();
 
         if (!this.enabled) {
