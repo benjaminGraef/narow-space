@@ -32,6 +32,7 @@ export class KeybindingConfigLoader {
                     for (const workspaceId of workspaces) {
                         this.workspaces.set(i, new WorkspaceNode(workspaceId));
                         i++;
+                        this.log(`defined workspace ${workspaceId}`);
                         if (i == MAX_NMB_OF_WORKSPACES) {
                             break;
                         }
@@ -45,31 +46,34 @@ export class KeybindingConfigLoader {
     }
 
     load(loadWorkspaces) {
-        try {
-            const file = Gio.File.new_for_path(this.configPath);
+        const file = Gio.File.new_for_path(this.configPath);
 
-            if (!file.query_exists(null)) {
-                this.log(`Config file not found: ${this.configPath}`);
-                return;
-            }
-
-            const [ok, contents] = file.load_contents(null);
-            if (!ok) {
-                this.log('Failed to read config file');
-                return;
-            }
-
-            const text = new TextDecoder().decode(contents);
-            const json = JSON.parse(text);
-
-            if (loadWorkspaces) {
-                this.loadWorkspaces(json);
-            }
-            this.applyConfig(json);
-
-        } catch (e) {
-            this.log(`Error loading config: ${e}`);
+        if (!file.query_exists(null)) {
+            this.log(`Config file not found: ${this.configPath}`);
+            return;
         }
+
+        file.load_contents_async(null, (file, res) => {
+            try {
+                const [ok, contents] = file.load_contents_finish(res);
+                if (!ok) {
+                    this.log('Failed to read config file');
+                    return;
+                }
+
+                const text = new TextDecoder().decode(contents);
+                const json = JSON.parse(text);
+
+                if (loadWorkspaces) {
+                    this.loadWorkspaces(json);
+                }
+
+                this.applyConfig(json);
+            } catch (e) {
+                logError(e);
+            }
+        });
+
     }
 
     applyConfig(json) {
