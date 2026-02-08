@@ -40,21 +40,16 @@ export default class narrowSpaceExtension extends Extension {
         this.indicator.menu.addMenuItem(this.pauseItem);
         Main.panel.addToStatusArea('narrow-space-indicator', this.indicator);
 
-        log(`[narrow-space] enabling`);
         // keybindings 
-        // this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
-        this.settings = this.getSettings();
+        this.settings = this.getSettings('org.gnome.shell.extensions.narrow-space');
         this.registerKeybindings();
 
-        if (!this.enabled) {
-            this.isServiceModeOn = false;
-            this.workspaces = new Map();
-            this.floatingWindows = new Array();
-
-        }
+        this.isServiceModeOn = false;
+        this.workspaces = new Map();
+        this.floatingWindows = new Array();
 
         this.keyConfig = new KeybindingConfigLoader(this.settings, this.workspaces);
-        this.keyConfig.load(!this.enabled);
+        this.keyConfig.load(true);
 
         const firstEntry = this.workspaces.entries().next().value;
         if (firstEntry) {
@@ -78,8 +73,6 @@ export default class narrowSpaceExtension extends Extension {
         this.grabOpEndId = global.display.connect('grab-op-end', (_display, metaWindow, op) => {
             this.windowGrabEnd(metaWindow.get_id());
         });
-
-        this.enabled = true;
     }
 
     updateWorkAreas() {
@@ -103,8 +96,6 @@ export default class narrowSpaceExtension extends Extension {
 
     disable() {
         this.unregisterKeybindings();
-        this.settings = null;
-        this._enabled = false;
 
         if (this.workAreaIdleId) {
             GLib.source_remove(this.workAreaIdleId);
@@ -141,6 +132,9 @@ export default class narrowSpaceExtension extends Extension {
             this.indicator.destroy();
             this.indicator = null;
         }
+
+        this.workspaces = null;
+        this.settings = null;
     }
 
     windowGrabEnd(windowId) {
