@@ -19,17 +19,28 @@ The switching between workspaces happens by minimizing all windows not in the cu
 
 For now there is not really any configuration that can be done to this extension. I want to add a configuration file that can customize some behaviour of the extension at some point.
 
-## Keybindings
-Narrow-space comes with default keybindings for its functions (for functions see below). If you want to change them, there is the possibility to create a config file under:
+### Configuration file
+In order for narrow-space to work, you need a configuration file located under:
 
     /home/yourUserName/.config/narrow-space/keybindings.json
- 
- This json file describes the function and the desired keybinding for it. So for example:
+
+In this file, the workspace definitions as well as keybindings are defined. An example one can be found in this repository as well. 
+
+### Workspaces
+
+In the configuration file, the available workspaces are defined by the user. In total up to 16 different workspaces are possible. Each workspace has its own name (or key). For example, common workspaces would be 1-9. But any string is possible. The workspace is shown on the right top bar when the extension is active. The following would be an example for workspace definitions written in the keybindings.json:
+
+    "define-workspace": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "M", "T"],
+
+This would define 11 workspaces, with each workspace having its individual name, which will be shown when active.
+
+### Keybindings
+ The configuration json file describes the function and the desired keybinding for it. So for example:
 
     {
-        "narrow-space-switch-workspace1": ["<Super>1"]
+        "narrow-space-switch-workspace-1": ["<Super>1"]
     }
-This configure Super + 1 key to trigger the function `switch-workspace1`, which switches to workspace 1.
+This configures Super + 1 key to trigger the function `switch-workspace-1`, which switches to workspace 1. Keep in mind that the `1` in `narrow-space-switch-workspace-1` means literally the first workspace that is defined in the array of `define-workspace` and <b>NOT</b> the name you gave that the workspace.
 
 <b>Important: If on your system, the configured keybinding is already used for something else, narrow-space will not pick it up and therefore not function correctly! Check your keybindings under `Settings > Keyboard > View and Customize Shortcuts`</b>. Furthermore on Ubuntu the super + 0-9 keys are used to launch apps from the dock, you can disable that with:
 
@@ -46,7 +57,7 @@ This configure Super + 1 key to trigger the function `switch-workspace1`, which 
 
 ## Supported Functions and Default Keybindings
 
-The following tables list all supported functions, grouped by category, with their default keybindings and a short description.
+The following tables list all supported functions, grouped by category, with their default keybindings (when used with the keybinding.json that is provided in the repository) and a short description.
 
 ### Workspace Switching
 
