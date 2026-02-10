@@ -21,6 +21,18 @@ export class WindowNode extends BaseNode {
         this.visible = false;
     }
 
+    toSerializable() {
+        return {
+            ...super.toSerializable(),
+            visible: this.visible,
+            // Skip cachedWindow - will be re-looked up by ID
+        };
+    }
+
+    restore(data) {
+        super.restore(data);
+        this.visible = data.visible;
+    }
 
     addLeaf(node) { return false; } // a window cannot have a leafe
     removeLeaf(nodeOrId) { return false; }

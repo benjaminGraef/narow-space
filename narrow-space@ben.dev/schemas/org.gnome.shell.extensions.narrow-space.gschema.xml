@@ -4,6 +4,20 @@
       id="org.gnome.shell.extensions.narrow-space"
       path="/org/gnome/shell/extensions/narrow-space/">
 
+    <!-- Data key for storage of workspaces -->
+    <key name="data" type="s">
+      <default>''</default>
+      <summary>Persistent data structure for storing all workspaces with their windows</summary>
+      <description>JSON-serialized workspace data saved on disable() and restored on enable().</description>
+    </key>
+
+    <!-- Floating windows -->
+    <key name="floating-windows" type="as">
+      <default>[]</default>
+      <summary>Persistent data structure for storing floating windows</summary>
+      <description>Currently floating windows are saved on disable() and restored on enable().</description>
+    </key>
+
     <!-- ========================= -->
     <!-- Switch to workspace -->
     <!-- ========================= -->

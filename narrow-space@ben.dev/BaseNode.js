@@ -10,6 +10,25 @@ export class BaseNode {
         this.parent = null;
     }
 
+    toSerializable() {
+        return {
+            id: this.id,
+            type: this.type,
+            workArea: this.workArea ? {...this.workArea} : null,
+            parentId: this.parent?.id || null,  // Store ID only!
+        };
+    }
+
+    restore(data) {
+
+        log(`[narrow-space] restoring node with id: ${data.id} and type: ${data.type}`);
+        this.id = data.id;
+        this.type = data.type;
+        this.workArea = data.workArea;
+        this.parentId = data.parentId;  // Store temp ID
+        // parent object gets linked LATER
+    }
+
     // ---- identity -------------------------------------------------------------
 
     isWindow() {

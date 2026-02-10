@@ -16,7 +16,7 @@ import { KeybindingConfigLoader } from './KeybindingConfigLoader.js';
 
 
 export default class narrowSpaceExtension extends Extension {
-    enable() {
+    async enable() {
         // panel indicator
         this.indicator = new PanelMenu.Button(0.0, 'narrow-space');
         this.label = new St.Label({
@@ -49,13 +49,16 @@ export default class narrowSpaceExtension extends Extension {
         this.floatingWindows = new Array();
 
         this.keyConfig = new KeybindingConfigLoader(this.settings, this.workspaces);
-        this.keyConfig.load(true);
+        await this.keyConfig.load(true);
 
-        const firstEntry = this.workspaces.entries().next().value;
-        if (firstEntry) {
-            this.activeWorkspace = firstEntry[1].getId();
+        this.restoreWorkspaces();
+        this.restoreFloatingWindows();
+
+        if (this.workspaces.size > 0) {
+            this.activeWorkspace = this.workspaces.keys().next().value;
+        } else {
+            log(`[narrow-space] no workspaces defined!`);
         }
-
 
         this.windowCreatedId = global.display.connect('window-created', (_display, metaWindow) => {
             this.onWindowCreated(metaWindow);
@@ -73,6 +76,20 @@ export default class narrowSpaceExtension extends Extension {
         this.grabOpEndId = global.display.connect('grab-op-end', (_display, metaWindow, op) => {
             this.windowGrabEnd(metaWindow.get_id());
         });
+
+        this.updateWorkAreas();
+    }
+
+    getAllMetaWindowIds() {
+        const wm = global.workspace_manager;
+        let ids = [];
+
+        for (let i = 0; i < wm.get_n_workspaces(); i++) {
+            const ws = wm.get_workspace_by_index(i);
+            ids.push(...ws.list_windows().map(w => w.get_id()));
+        }
+
+        return ids;
     }
 
     updateWorkAreas() {
@@ -92,7 +109,6 @@ export default class narrowSpaceExtension extends Extension {
             }
         }
     };
-
 
     disable() {
         this.unregisterKeybindings();
@@ -128,13 +144,100 @@ export default class narrowSpaceExtension extends Extension {
             this.grabOpEndId = 0;
         }
 
+
         if (this.indicator) {
             this.indicator.destroy();
             this.indicator = null;
         }
 
+        this.storeWorkspaces();
+        this.storeFloatingWindows();
+
+        this.floatingWindows = null;
+        this.keyConfig = null;
         this.workspaces = null;
         this.settings = null;
+    }
+
+    createNodeFromData(data) {
+        switch (data.type) {
+            case 'workspace':
+                return new WorkspaceNode(data.id);
+            case 'window':
+                return new WindowNode(data.id);
+            default:
+                log(`Unknown node type: ${data.type}, skipping`);
+                return null;
+        }
+    }
+
+    storeWorkspaces() {
+        const serializableWorkspaces = Array.from(this.workspaces.entries())
+            .map(([id, ws]) => ({
+                mapId: id,
+                ws: ws.toSerializable()
+            }));
+
+        this.settings.set_string('data', JSON.stringify(serializableWorkspaces));
+    }
+
+    restoreWorkspaces() {
+        const serializedData = this.settings.get_string('data') || '{}'
+        const saved = JSON.parse(serializedData || '[]');
+        if (!saved.length) {
+            return;
+        }
+        const idToNode = new Map();
+        for (const data of saved) {
+            const node = this.createNodeFromData(data.ws);
+            if (!node) {
+                continue;
+            }
+
+            for (const leaf of data.ws.leafs) {
+                const leafNode = this.createNodeFromData(leaf);
+                idToNode.set(leafNode.id, leafNode);
+            }
+            node.restore(data.ws);
+            idToNode.set(node.id, node);
+        }
+
+        // restore parent references from stored IDs
+        for (const node of idToNode.values()) {
+            if (node.parentId) {
+                node.parent = idToNode.get(node.parentId) || null;
+                delete node.parentId;  // Cleanup temp ID, not needed anymore
+            }
+        }
+
+        // restore workspace leafs arrays
+        for (const wsNode of this.workspaces.values()) {
+            const wsData = saved.find(d => d.ws.id === wsNode.id);
+            if (wsData?.ws.leafs) {
+                // this node had leafs
+                for (const leaf of wsData.ws.leafs) {
+                    const existingWindows = this.getAllMetaWindowIds();
+                    if (existingWindows.includes(leaf.id)) {
+                        wsNode.leafs.push(idToNode.get(leaf.id));
+                    }
+                }
+            }
+        }
+
+        this.settings.reset('data');
+    }
+
+    restoreFloatingWindows() {
+        const savedIds = this.settings.get_strv('floating-windows');
+        this.floatingWindows = savedIds.map(id => parseInt(id, 10));
+        this.settings.reset('floating-windows');
+    }
+
+    storeFloatingWindows() {
+        this.settings.set_strv(
+            'floating-windows',
+            this.floatingWindows.map(w => String(w))
+        );
     }
 
     windowGrabEnd(windowId) {
@@ -167,8 +270,8 @@ export default class narrowSpaceExtension extends Extension {
         if (idx !== -1) {
             const leaf = new WindowNode(metaWindow.get_id());
             leaf.setMetaWindow?.(metaWindow);
-            this.workspaces.get(this.activeWorkspace).addLeaf(leaf);
-            this.workspaces.get(this.activeWorkspace).show();
+            this.workspaces.get(this.activeWorkspace)?.addLeaf(leaf);
+            this.workspaces.get(this.activeWorkspace)?.show();
             this.floatingWindows.splice(idx, 1);
         } else {
             if (this.workspaces.get(this.activeWorkspace).removeLeaf(metaWindow.get_id())) {

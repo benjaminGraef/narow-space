@@ -26,6 +26,26 @@ export class WorkspaceNode extends BaseNode {
         this.STACKED_OVERLAP = 20;
     }
 
+    toSerializable() {
+        return {
+            ...super.toSerializable(),
+            currentMode: this.currentMode,
+            leafs: this.leafs.map(leaf => leaf.toSerializable()),
+            focusedLeafId: this.focusedLeaf?.id || null,
+            lastFocusedLeafId: this.lastFocusedLeaf?.id || null,
+            STACKED_OVERLAP: this.STACKED_OVERLAP,
+        };
+    }
+
+    restore(data) {
+        super.restore(data);
+        this.currentMode = data.currentMode;
+        this.focusedLeafId = data.focusedLeaf?.id || null;
+        this.lastFocusedLeafId = data.lastFocusedLeaf?.id || null;
+        this.STACKED_OVERLAP = data.STACKED_OVERLAP;
+        // leafs will be restored later when all nodes exist
+    }
+
     setNextMode() {
         if (this.focusedLeaf?.isWorkspace()) {
             this.focusedLeaf.setNextMode();

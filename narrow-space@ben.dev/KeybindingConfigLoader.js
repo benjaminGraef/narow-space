@@ -49,30 +49,34 @@ export class KeybindingConfigLoader {
 
         if (!file.query_exists(null)) {
             this.log(`Config file not found: ${this.configPath}`);
-            return;
+            return Promise.resolve();
         }
 
-        file.load_contents_async(null, (file, res) => {
-            try {
-                const [ok, contents] = file.load_contents_finish(res);
-                if (!ok) {
-                    this.log('Failed to read config file');
-                    return;
+        return new Promise((resolve, reject) => {
+            file.load_contents_async(null, (file, res) => {
+                try {
+                    const [ok, contents] = file.load_contents_finish(res);
+                    if (!ok) {
+                        this.log('Failed to read config file');
+                        resolve();
+                        return;
+                    }
+
+                    const text = new TextDecoder().decode(contents);
+                    const json = JSON.parse(text);
+
+                    if (loadWorkspaces) {
+                        this.loadWorkspaces(json);
+                    }
+                    this.applyConfig(json);
+
+                    resolve(json);
+                } catch (e) {
+                    logError(e);
+                    reject(e);
                 }
-
-                const text = new TextDecoder().decode(contents);
-                const json = JSON.parse(text);
-
-                if (loadWorkspaces) {
-                    this.loadWorkspaces(json);
-                }
-
-                this.applyConfig(json);
-            } catch (e) {
-                logError(e);
-            }
+            });
         });
-
     }
 
     applyConfig(json) {
