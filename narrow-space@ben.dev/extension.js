@@ -171,56 +171,60 @@ export default class narrowSpaceExtension extends Extension {
         }
     }
 
+    fillLeafsOfWorkspace(workspace, workspaceLeafs, existingWindows) {
+        for (const leaf of workspaceLeafs) {
+            const node = this.createNodeFromData(leaf);
+            if (!node) {
+                continue;
+            }
+
+            if (node.type === 'workspace') {
+                if (leaf.leafs?.length > 0) {
+                    this.fillLeafsOfWorkspace(node, leaf.leafs, existingWindows);
+                }
+            } else if (node.type === 'window') {
+                if (!existingWindows.includes(leaf.id)) {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+
+            node.restore(leaf);
+            node.parent = workspace;
+            workspace.leafs.push(node);
+        }
+    }
+
     storeWorkspaces() {
         const serializableWorkspaces = Array.from(this.workspaces.entries())
             .map(([id, ws]) => ({
                 mapId: id,
-                ws: ws.toSerializable()
+                workspaceData: ws.toSerializable()
             }));
 
         this.settings.set_string('data', JSON.stringify(serializableWorkspaces));
     }
 
     restoreWorkspaces() {
-        const serializedData = this.settings.get_string('data') || '{}'
+        const serializedData = this.settings.get_string('data') || '[]'
         const saved = JSON.parse(serializedData || '[]');
         if (!saved.length) {
             return;
         }
         const idToNode = new Map();
-        for (const data of saved) {
-            const node = this.createNodeFromData(data.ws);
-            if (!node) {
+
+
+        const existingWindows = this.getAllMetaWindowIds();
+        for (const entry of saved) {
+            const ws = this.workspaces.get(entry.mapId);
+            if (ws === undefined)
                 continue;
-            }
 
-            for (const leaf of data.ws.leafs) {
-                const leafNode = this.createNodeFromData(leaf);
-                idToNode.set(leafNode.id, leafNode);
-            }
-            node.restore(data.ws);
-            idToNode.set(node.id, node);
-        }
-
-        // restore parent references from stored IDs
-        for (const node of idToNode.values()) {
-            if (node.parentId) {
-                node.parent = idToNode.get(node.parentId) || null;
-                delete node.parentId;  // Cleanup temp ID, not needed anymore
-            }
-        }
-
-        // restore workspace leafs arrays
-        for (const wsNode of this.workspaces.values()) {
-            const wsData = saved.find(d => d.ws.id === wsNode.id);
-            if (wsData?.ws.leafs) {
-                // this node had leafs
-                for (const leaf of wsData.ws.leafs) {
-                    const existingWindows = this.getAllMetaWindowIds();
-                    if (existingWindows.includes(leaf.id)) {
-                        wsNode.leafs.push(idToNode.get(leaf.id));
-                    }
-                }
+            ws.restore(entry.workspaceData);
+            // at this point, parent reference and leafs are still missing
+            if (entry.workspaceData.leafs?.length > 0) {
+                this.fillLeafsOfWorkspace(ws, entry.workspaceData.leafs, existingWindows);
             }
         }
 

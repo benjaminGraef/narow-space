@@ -56,7 +56,6 @@ export class WindowNode extends BaseNode {
             }
         }
 
-        log(`[narrow-space] Could not resolve window`);
         this.cachedWindow = null;
         return null;
     }

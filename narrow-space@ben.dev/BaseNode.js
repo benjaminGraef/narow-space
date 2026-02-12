@@ -20,12 +20,9 @@ export class BaseNode {
     }
 
     restore(data) {
-
-        log(`[narrow-space] restoring node with id: ${data.id} and type: ${data.type}`);
         this.id = data.id;
         this.type = data.type;
         this.workArea = data.workArea;
-        this.parentId = data.parentId;  // Store temp ID
         // parent object gets linked LATER
     }
 
