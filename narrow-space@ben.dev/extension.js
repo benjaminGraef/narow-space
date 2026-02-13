@@ -166,7 +166,7 @@ export default class narrowSpaceExtension extends Extension {
             case 'window':
                 return new WindowNode(data.id);
             default:
-                log(`Unknown node type: ${data.type}, skipping`);
+                log(`[narrow-space] Unknown node type: ${data.type}, skipping`);
                 return null;
         }
     }

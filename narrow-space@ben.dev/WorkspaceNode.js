@@ -206,6 +206,11 @@ export class WorkspaceNode extends BaseNode {
     }
 
     joinWindow(direction) {
+        if (this.focusedLeaf?.isWorkspace()) {
+            this.focusedLeaf.joinWindow(direction);
+            return;
+        }
+
         if (this.currentMode === this.modes.STACKING_V
             || this.currentMode === this.modes.STACKING_H) {
             return;
