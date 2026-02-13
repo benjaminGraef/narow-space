@@ -171,16 +171,16 @@ export default class narrowSpaceExtension extends Extension {
         }
     }
 
-    fillLeafsOfWorkspace(workspace, workspaceLeafs, existingWindows) {
-        for (const leaf of workspaceLeafs) {
+    fillLeavesOfWorkspace(workspace, workspaceLeaves, existingWindows) {
+        for (const leaf of workspaceLeaves) {
             const node = this.createNodeFromData(leaf);
             if (!node) {
                 continue;
             }
 
             if (node.type === 'workspace') {
-                if (leaf.leafs?.length > 0) {
-                    this.fillLeafsOfWorkspace(node, leaf.leafs, existingWindows);
+                if (leaf.leaves?.length > 0) {
+                    this.fillLeavesOfWorkspace(node, leaf.leaves, existingWindows);
                 }
             } else if (node.type === 'window') {
                 if (!existingWindows.includes(leaf.id)) {
@@ -192,7 +192,7 @@ export default class narrowSpaceExtension extends Extension {
 
             node.restore(leaf);
             node.parent = workspace;
-            workspace.leafs.push(node);
+            workspace.leaves.push(node);
         }
     }
 
@@ -222,9 +222,9 @@ export default class narrowSpaceExtension extends Extension {
                 continue;
 
             ws.restore(entry.workspaceData);
-            // at this point, parent reference and leafs are still missing
-            if (entry.workspaceData.leafs?.length > 0) {
-                this.fillLeafsOfWorkspace(ws, entry.workspaceData.leafs, existingWindows);
+            // at this point, parent reference and leaves are still missing
+            if (entry.workspaceData.leaves?.length > 0) {
+                this.fillLeavesOfWorkspace(ws, entry.workspaceData.leaves, existingWindows);
             }
         }
 
@@ -540,7 +540,7 @@ export default class narrowSpaceExtension extends Extension {
                 }
 
                 // Avoid duplicates: if already exists, just refresh layout
-                const already = ws.leafs.some(l => (l.getId()) === id);
+                const already = ws.leaves.some(l => (l.getId()) === id);
                 if (!already) {
                     const leaf = new WindowNode(id);
                     leaf.setMetaWindow?.(metaWindow);

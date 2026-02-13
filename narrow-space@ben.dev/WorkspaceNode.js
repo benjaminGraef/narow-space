@@ -13,7 +13,7 @@ export class WorkspaceNode extends BaseNode {
         });
 
         /** @type {BaseNode[]} */
-        this.leafs = [];
+        this.leaves = [];
 
         this.currentMode = this.modes.VERTICAL;
 
@@ -30,7 +30,7 @@ export class WorkspaceNode extends BaseNode {
         return {
             ...super.toSerializable(),
             currentMode: this.currentMode,
-            leafs: this.leafs.map(leaf => leaf.toSerializable()),
+            leaves: this.leaves.map(leaf => leaf.toSerializable()),
             focusedLeafId: this.focusedLeaf?.id || null,
             lastFocusedLeafId: this.lastFocusedLeaf?.id || null,
             STACKED_OVERLAP: this.STACKED_OVERLAP,
@@ -43,7 +43,7 @@ export class WorkspaceNode extends BaseNode {
         this.focusedLeafId = data.focusedLeaf?.id || null;
         this.lastFocusedLeafId = data.lastFocusedLeaf?.id || null;
         this.STACKED_OVERLAP = data.STACKED_OVERLAP;
-        // leafs will be restored later when all nodes exist
+        // leaves will be restored later when all nodes exist
     }
 
     setNextMode() {
@@ -74,7 +74,7 @@ export class WorkspaceNode extends BaseNode {
             return;
         }
 
-        const n = this.leafs.length;
+        const n = this.leaves.length;
         if (n <= 1 || !this.focusedLeaf || !this.workArea) {
             return;
         }
@@ -86,8 +86,8 @@ export class WorkspaceNode extends BaseNode {
 
         this.ensureWeights();
 
-        const leafs = this.leafs;
-        const idx = leafs.indexOf(this.focusedLeaf);
+        const leaves = this.leaves;
+        const idx = leaves.indexOf(this.focusedLeaf);
         if (idx < 0) {
             return;
         }
@@ -96,7 +96,7 @@ export class WorkspaceNode extends BaseNode {
         const totalPx = isVertical ? this.workArea.width : this.workArea.height;
         const weights = isVertical ? this._weightsX : this._weightsY;
 
-        this.normalizeMissingWeights(leafs, weights);
+        this.normalizeMissingWeights(leaves, weights);
 
         // Choose neighbor index: prefer right/down, else left/up
         let j = idx + 1;
@@ -107,12 +107,12 @@ export class WorkspaceNode extends BaseNode {
             return;
         }
 
-        const idA = leafs[idx].getId();
-        const idB = leafs[j].getId();
+        const idA = leaves[idx].getId();
+        const idB = leaves[j].getId();
 
         // Convert pixel delta to weight delta relative to current sum
         let sum = 0;
-        for (const leaf of leafs) {
+        for (const leaf of leaves) {
             sum += weights.get(leaf.getId());
         }
 
@@ -155,12 +155,12 @@ export class WorkspaceNode extends BaseNode {
             return this.focusedLeaf.addLeaf(leaf);
         }
 
-        if (!leaf || this.leafs.includes(leaf)) {
+        if (!leaf || this.leaves.includes(leaf)) {
             return false;
         }
 
         leaf.setParent?.(this);
-        this.leafs.push(leaf);
+        this.leaves.push(leaf);
 
         if (!this.focusedLeaf) {
             this.focusedLeaf = leaf;
@@ -194,12 +194,12 @@ export class WorkspaceNode extends BaseNode {
             return true;
         }
 
-        const otherIx = this.leafs.indexOf(leaf);
-        const currentIx = this.leafs.indexOf(this.focusedLeaf);
+        const otherIx = this.leaves.indexOf(leaf);
+        const currentIx = this.leaves.indexOf(this.focusedLeaf);
 
-        const tmp = this.leafs[otherIx];
-        this.leafs[otherIx] = this.leafs[currentIx];
-        this.leafs[currentIx] = tmp;
+        const tmp = this.leaves[otherIx];
+        this.leaves[otherIx] = this.leaves[currentIx];
+        this.leaves[currentIx] = tmp;
 
         this.show();
         return true;
@@ -238,7 +238,7 @@ export class WorkspaceNode extends BaseNode {
         this.removeLeaf(otherLeaf, /*show*/ false);
         this.removeLeaf(this.focusedLeaf, /*show*/ false);
 
-        this.leafs.push(nested);
+        this.leaves.push(nested);
         nested.setParent?.(this);
 
         this.lastFocusedLeaf = this.focusedLeaf;
@@ -247,12 +247,12 @@ export class WorkspaceNode extends BaseNode {
         this.show();
     }
 
-    getNumberOfLeafs() {
-        return this.leafs.length;
+    getNumberOfLeaves() {
+        return this.leaves.length;
     }
 
     removeLeaf(leafOrId, show = true) {
-        const idx = this.leafs.findIndex(l =>
+        const idx = this.leaves.findIndex(l =>
             l === leafOrId ||
             l.getId() === leafOrId ||
             l.id === leafOrId
@@ -260,13 +260,13 @@ export class WorkspaceNode extends BaseNode {
 
         if (idx < 0) {
             // not found in this workspace, check all leaf workspaces
-            for (let i = 0; i < this.leafs.length; i++) {
-                const leaf = this.leafs[i];
+            for (let i = 0; i < this.leaves.length; i++) {
+                const leaf = this.leaves[i];
                 if (leaf.isWorkspace() && leaf.removeLeaf(leafOrId)) {
                     // window was in that workspace
-                    if (leaf.getNumberOfLeafs() === 0) {
+                    if (leaf.getNumberOfLeaves() === 0) {
                         // collapse nested workspace
-                        this.leafs.splice(i, 1);
+                        this.leaves.splice(i, 1);
                         this.focusedLeaf = this.lastFocusedLeaf;
                         this.show();
                     }
@@ -277,10 +277,10 @@ export class WorkspaceNode extends BaseNode {
             return false;
         }
 
-        const removed = this.leafs[idx];
+        const removed = this.leaves[idx];
         const wasFocused = removed === this.focusedLeaf;
 
-        this.leafs.splice(idx, 1);
+        this.leaves.splice(idx, 1);
 
         if (removed.getParent?.() === this) {
             removed.setParent?.(null);
@@ -290,17 +290,17 @@ export class WorkspaceNode extends BaseNode {
             this.lastFocusedLeaf = null;
         }
 
-        if (this.leafs.length === 0) {
+        if (this.leaves.length === 0) {
             this.focusedLeaf = null;
             this.lastFocusedLeaf = null;
             return true;
         }
 
         if (wasFocused) {
-            if (this.lastFocusedLeaf && this.leafs.includes(this.lastFocusedLeaf)) {
+            if (this.lastFocusedLeaf && this.leaves.includes(this.lastFocusedLeaf)) {
                 this.focusedLeaf = this.lastFocusedLeaf;
             } else {
-                this.focusedLeaf = this.leafs[Math.min(idx, this.leafs.length - 1)];
+                this.focusedLeaf = this.leaves[Math.min(idx, this.leaves.length - 1)];
             }
             this.lastFocusedLeaf = null;
         }
@@ -318,7 +318,7 @@ export class WorkspaceNode extends BaseNode {
         let best = undefined;
         let bestDist2 = Infinity;
 
-        for (const leaf of this.leafs) {
+        for (const leaf of this.leaves) {
             if (leaf === this.focusedLeaf) {
                 continue;
             }
@@ -354,8 +354,8 @@ export class WorkspaceNode extends BaseNode {
 
     focus() {
         if (!this.focusedLeaf) {
-            if (this.leafs.length > 0) {
-                this.focusedLeaf = this.leafs[0]
+            if (this.leaves.length > 0) {
+                this.focusedLeaf = this.leaves[0]
             }
         }
         this.focusedLeaf?.focus();
@@ -363,13 +363,13 @@ export class WorkspaceNode extends BaseNode {
 
     // returns true if the moveFocus was performed, false otherwise
     moveFocus(direction) {
-        const n = this.leafs.length;
+        const n = this.leaves.length;
         if (n === 0) {
             return false;
         }
 
-        if (!this.focusedLeaf || !this.leafs.includes(this.focusedLeaf)) {
-            this.focusedLeaf = this.leafs[0];
+        if (!this.focusedLeaf || !this.leaves.includes(this.focusedLeaf)) {
+            this.focusedLeaf = this.leaves[0];
             this.lastFocusedLeaf = null;
         }
 
@@ -382,7 +382,7 @@ export class WorkspaceNode extends BaseNode {
 
         if (this.currentMode === this.modes.STACKING_V
             || this.currentMode === this.modes.STACKING_H) {
-            let idx = this.leafs.indexOf(this.focusedLeaf);
+            let idx = this.leaves.indexOf(this.focusedLeaf);
             if (idx < 0) idx = 0;
 
             let next = false;
@@ -406,7 +406,7 @@ export class WorkspaceNode extends BaseNode {
             idx = next ? ((idx + 1) % n) : (idx === 0 ? (n - 1) : (idx - 1));
 
             this.lastFocusedLeaf = this.focusedLeaf;
-            this.focusedLeaf = this.leafs[idx];
+            this.focusedLeaf = this.leaves[idx];
 
             this.focusedLeaf?.focus();
             this.show();
@@ -435,9 +435,9 @@ export class WorkspaceNode extends BaseNode {
         }
     }
 
-    normalizeMissingWeights(axisLeafs, weights) {
+    normalizeMissingWeights(axisLeaves, weights) {
         // Ensure every leaf has a weight > 0
-        for (const leaf of axisLeafs) {
+        for (const leaf of axisLeaves) {
             const id = leaf.getId();
             const w = weights.get(id);
             if (!(w > 0)) {
@@ -447,8 +447,8 @@ export class WorkspaceNode extends BaseNode {
     }
 
     show() {
-        const leafs = this.leafs;
-        const n = leafs.length;
+        const leaves = this.leaves;
+        const n = leaves.length;
         if (n === 0 || !this.workArea) return false;
 
         this.ensureWeights();
@@ -457,8 +457,8 @@ export class WorkspaceNode extends BaseNode {
             || this.currentMode === this.modes.STACKING_H) {
             const overlap = this.STACKED_OVERLAP;
             const ordered = this.focusedLeaf
-                ? [...leafs.filter(l => l !== this.focusedLeaf), this.focusedLeaf]
-                : [...leafs];
+                ? [...leaves.filter(l => l !== this.focusedLeaf), this.focusedLeaf]
+                : [...leaves];
 
             for (let i = 0; i < ordered.length; i++) {
                 const leaf = ordered[i];
@@ -474,31 +474,31 @@ export class WorkspaceNode extends BaseNode {
         }
 
         if (this.currentMode === this.modes.VERTICAL) {
-            return this.showWeightedVertical(leafs);
+            return this.showWeightedVertical(leaves);
         }
 
         if (this.currentMode === this.modes.HORIZONTAL) {
-            return this.showWeightedHorizontal(leafs);
+            return this.showWeightedHorizontal(leaves);
         }
 
         return false;
     }
 
-    showWeightedVertical(leafs) {
+    showWeightedVertical(leaves) {
         const MIN_PX = 80;
         const totalW = this.workArea.width;
         const totalH = this.workArea.height;
 
         const weights = this._weightsX;
-        this.normalizeMissingWeights(leafs, weights);
+        this.normalizeMissingWeights(leaves, weights);
 
         let sum = 0;
-        for (const leaf of leafs) {
+        for (const leaf of leaves) {
             sum += weights.get(leaf.getId());
         }
 
         // compute pixel widths using largest remainder
-        const parts = leafs.map((leaf, i) => {
+        const parts = leaves.map((leaf, i) => {
             const id = leaf.getId();
             const w = weights.get(id);
             const exact = (w / sum) * totalW;
@@ -556,20 +556,20 @@ export class WorkspaceNode extends BaseNode {
         return true;
     }
 
-    showWeightedHorizontal(leafs) {
+    showWeightedHorizontal(leaves) {
         const MIN_PX = 80;
         const totalW = this.workArea.width;
         const totalH = this.workArea.height;
 
         const weights = this._weightsY;
-        this.normalizeMissingWeights(leafs, weights);
+        this.normalizeMissingWeights(leaves, weights);
 
         let sum = 0;
-        for (const leaf of leafs) {
+        for (const leaf of leaves) {
             sum += weights.get(leaf.getId());
         }
 
-        const parts = leafs.map((leaf, i) => {
+        const parts = leaves.map((leaf, i) => {
             const id = leaf.getId();
             const w = weights.get(id);
             const exact = (w / sum) * totalH;
@@ -626,7 +626,7 @@ export class WorkspaceNode extends BaseNode {
 
 
     hide() {
-        for (const leaf of this.leafs) {
+        for (const leaf of this.leaves) {
             leaf.hide?.();
         }
     }
@@ -655,7 +655,7 @@ export class WorkspaceNode extends BaseNode {
             return true;
         }
 
-        for (const leaf of this.leafs) {
+        for (const leaf of this.leaves) {
             if (leaf.id === leafId) {
                 this.focusedLeaf = leaf;
                 return true;
