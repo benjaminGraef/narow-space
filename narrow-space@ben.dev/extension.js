@@ -46,7 +46,7 @@ export default class narrowSpaceExtension extends Extension {
 
         this.isServiceModeOn = false;
         this.workspaces = new Map();
-        this.floatingWindows = new Array();
+        this.floatingWindows = [];
 
         this.keyConfig = new KeybindingConfigLoader(this.settings, this.workspaces);
         await this.keyConfig.load(true);
@@ -57,7 +57,7 @@ export default class narrowSpaceExtension extends Extension {
         if (this.workspaces.size > 0) {
             this.activeWorkspace = this.workspaces.keys().next().value;
         } else {
-            log(`[narrow-space] no workspaces defined!`);
+            console.log(`[narrow-space] no workspaces defined!`);
         }
 
         this.windowCreatedId = global.display.connect('window-created', (_display, metaWindow) => {
@@ -73,7 +73,7 @@ export default class narrowSpaceExtension extends Extension {
             this.onWindowFocused(win.get_id());
         });
 
-        this.grabOpEndId = global.display.connect('grab-op-end', (_display, metaWindow, op) => {
+        this.grabOpEndId = global.display.connect('grab-op-end', (_display, metaWindow, _op) => {
             this.windowGrabEnd(metaWindow.get_id());
         });
 
@@ -166,7 +166,7 @@ export default class narrowSpaceExtension extends Extension {
             case 'window':
                 return new WindowNode(data.id);
             default:
-                log(`[narrow-space] Unknown node type: ${data.type}, skipping`);
+                console.log(`[narrow-space] Unknown node type: ${data.type}, skipping`);
                 return null;
         }
     }
@@ -212,8 +212,6 @@ export default class narrowSpaceExtension extends Extension {
         if (!saved.length) {
             return;
         }
-        const idToNode = new Map();
-
 
         const existingWindows = this.getAllMetaWindowIds();
         for (const entry of saved) {
@@ -383,13 +381,13 @@ export default class narrowSpaceExtension extends Extension {
             return;
         }
         if (workspaceId === this.activeWorkspace) {
-            log(`[narrow-space] window already in this workspace`);
+            console.log(`[narrow-space] window already in this workspace`);
             return;
         }
 
         const activeWin = this.getActiveWindow();
         if (!activeWin) {
-            log('[narrow-space] no focused window');
+            console.log('[narrow-space] no focused window');
             return;
         }
 
@@ -399,13 +397,13 @@ export default class narrowSpaceExtension extends Extension {
         const toWs = this.workspaces.get(workspaceId);
 
         if (!fromWs || !toWs) {
-            log(`[narrow-space] workspace model missing (from=${this.activeWorkspace}, to=${workspaceId})`);
+            console.log(`[narrow-space] workspace model missing (from=${this.activeWorkspace}, to=${workspaceId})`);
             return;
         }
 
         const wasPresent = fromWs.removeLeaf(activeWinId, /*show*/ false);
         if (!wasPresent) {
-            log(`[narrow-space] window ${activeWinId} not found in workspace ${this.activeWorkspace}`);
+            console.log(`[narrow-space] window ${activeWinId} not found in workspace ${this.activeWorkspace}`);
             return;
         }
 

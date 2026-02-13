@@ -1,0 +1,24 @@
+{
+  "name": "narrowspace",
+  "version": "0.1.0",
+  "description": "Tiling window manager on top of gnome",
+  "main": "extension.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjaminGraef/narow-space.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benjaminGraef/narow-space/issues"
+  },
+  "homepage": "https://github.com/benjaminGraef/narow-space#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.0",
+    "globals": "^17.3.0"
+  }
+}

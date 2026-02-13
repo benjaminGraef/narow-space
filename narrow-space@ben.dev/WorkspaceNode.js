@@ -251,7 +251,7 @@ export class WorkspaceNode extends BaseNode {
         return this.leaves.length;
     }
 
-    removeLeaf(leafOrId, show = true) {
+    removeLeaf(leafOrId, _show = true) {
         const idx = this.leaves.findIndex(l =>
             l === leafOrId ||
             l.getId() === leafOrId ||
@@ -385,7 +385,7 @@ export class WorkspaceNode extends BaseNode {
             let idx = this.leaves.indexOf(this.focusedLeaf);
             if (idx < 0) idx = 0;
 
-            let next = false;
+            let next;
             if (this.currentMode === this.modes.STACKING_V) {
                 if (direction === 'left') {
                     next = true;

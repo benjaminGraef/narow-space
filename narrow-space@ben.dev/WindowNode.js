@@ -34,8 +34,8 @@ export class WindowNode extends BaseNode {
         this.visible = data.visible;
     }
 
-    addLeaf(node) { return false; } // a window cannot have a leafe
-    removeLeaf(nodeOrId) { return false; }
+    addLeaf(_node) { return false; } // a window cannot have a leafe
+    removeLeaf(_nodeOrId) { return false; }
 
     /**
      * Resolve Meta.Window by id.
@@ -92,9 +92,12 @@ export class WindowNode extends BaseNode {
 
         try {
             const flags = win.get_maximized?.();
-            if (flags)
+            if (flags) {
                 win.unmaximize(Meta.MaximizeFlags.BOTH);
-        } catch { }
+            }
+        } catch (e) {
+            console.error(e, `[narrow-space] Failed to unmaximize window ${this.id}`);
+        }
 
         try {
             win.move_resize_frame(
@@ -105,7 +108,7 @@ export class WindowNode extends BaseNode {
                 area.height
             );
         } catch (e) {
-            logError(e, `[narrow-space] move_resize_frame failed for window ${this.id}`);
+            console.error(e, `[narrow-space] move_resize_frame failed for window ${this.id}`);
         }
     }
 
@@ -127,7 +130,7 @@ export class WindowNode extends BaseNode {
             seat.warp_pointer(this.workArea.x + this.workArea.width / 2, this.workArea.y + this.workArea.height / 2);
             return true;
         } catch (e) {
-            logError(e, `[narrow-space] activate failed for window ${this.id}`);
+            console.error(e, `[narrow-space] activate failed for window ${this.id}`);
             return false;
         }
     }
@@ -144,7 +147,7 @@ export class WindowNode extends BaseNode {
             if (win.minimized)
                 win.unminimize();
         } catch (e) {
-            logError(e);
+            console.error(e);
         }
     }
 
@@ -159,7 +162,7 @@ export class WindowNode extends BaseNode {
         try {
             win.minimize();
         } catch (e) {
-            logError(e);
+            console.error(e);
         }
     }
 }

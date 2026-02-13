@@ -16,7 +16,7 @@ export class KeybindingConfigLoader {
     }
 
     log(msg) {
-        log(`[narrow-space] ${msg}`);
+        console.log(`[narrow-space] ${msg}`);
     }
 
     loadWorkspaces(json) {
@@ -24,7 +24,7 @@ export class KeybindingConfigLoader {
         for (const [key, workspaces] of Object.entries(json)) {
             try {
                 if (!Array.isArray(workspaces)) {
-                    this.log(`Skipping ${key}: value must be array`);
+                    this.console.log(`Skipping ${key}: value must be array`);
                     continue;
                 }
 
@@ -32,14 +32,14 @@ export class KeybindingConfigLoader {
                     for (const workspaceId of workspaces) {
                         this.workspaces.set(i, new WorkspaceNode(workspaceId));
                         i++;
-                        if (i == MAX_NMB_OF_WORKSPACES) {
+                        if (i === MAX_NMB_OF_WORKSPACES) {
                             break;
                         }
                     }
                 }
 
             } catch (e) {
-                this.log(`Failed to define workspace ${key}: ${e}`);
+                this.console.log(`Failed to define workspace ${key}: ${e}`);
             }
         }
     }
@@ -48,7 +48,7 @@ export class KeybindingConfigLoader {
         const file = Gio.File.new_for_path(this.configPath);
 
         if (!file.query_exists(null)) {
-            this.log(`Config file not found: ${this.configPath}`);
+            this.console.log(`Config file not found: ${this.configPath}`);
             return Promise.resolve();
         }
 
@@ -57,7 +57,7 @@ export class KeybindingConfigLoader {
                 try {
                     const [ok, contents] = file.load_contents_finish(res);
                     if (!ok) {
-                        this.log('Failed to read config file');
+                        this.console.log('Failed to read config file');
                         resolve();
                         return;
                     }
@@ -72,7 +72,7 @@ export class KeybindingConfigLoader {
 
                     resolve(json);
                 } catch (e) {
-                    logError(e);
+                    console.error(e);
                     reject(e);
                 }
             });
@@ -93,7 +93,6 @@ export class KeybindingConfigLoader {
 
                 // check if the workspace was defined before
                 const num = parseInt(key.match(/-(\d+)$/)?.[1]);
-                let set = false;
                 if (Number.isFinite(num) && num < this.workspaces.size + 1) {
                     this.settings.set_strv(key, accels);
                     continue;
