@@ -1,6 +1,8 @@
 # Narrow-space
 This is a tiling window manager that runs on top of Gnome, as a gnome extension. It is heavily based on the macOS window manager called aerospace (https://github.com/nikitabobko/AeroSpace), which is in turn inspired by the i3 window manager.
 
+Link to demo video: https://youtu.be/zGnFGCQF0f4
+
 ## Features currently working
 * Tree based tiling window management
 * Own implementation of workspaces, not relying on the gnome nativ workspaces. When using the term workspace, I am referring to narrow-space workspaces from now on.
@@ -146,5 +148,7 @@ Each workspace has a single tiling/layout strategy. Tiling vertical, horizontal 
 Some windows are not automatically tiled when they are started. I think the reason is that they try to restore some previous state they had and mess with the narrow-space resizing that gets triggered when a new window is created. Just switch to another workspace and then switch back and the tiling will work.
 
 I only have 1 monitor currently, so I am not able to develop it for multiple monitor support, this will come soon!
+
+When activating the extension, windows that were already open, are not managed.
 
 Its for sure not super stable, but it works quite nice already.
