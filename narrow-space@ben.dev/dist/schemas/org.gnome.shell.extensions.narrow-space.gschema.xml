@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema
+      id="org.gnome.shell.extensions.narrow-space"
+      path="/org/gnome/shell/extensions/narrow-space/">
+
+    <!-- Data key for storage of workspaces -->
+    <key name="data" type="s">
+      <default>''</default>
+      <summary>Persistent data structure for storing all workspaces with their windows</summary>
+      <description>JSON-serialized workspace data saved on disable() and restored on enable().</description>
+    </key>
+
+    <!-- Floating windows -->
+    <key name="floating-windows" type="as">
+      <default>[]</default>
+      <summary>Persistent data structure for storing floating windows</summary>
+      <description>Currently floating windows are saved on disable() and restored on enable().</description>
+    </key>
+
+    <!-- ========================= -->
+    <!-- Switch to workspace -->
+    <!-- ========================= -->
+
+    <!-- Super + 1..9 -->
+    <key name="narrow-space-switch-workspace-1" type="as">
+      <default>["&lt;Super&gt;1"]</default>
+      <summary>Switch to workspace 1</summary>
+      <description>Switch to narrow-space workspace 1</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-2" type="as">
+      <default>["&lt;Super&gt;2"]</default>
+      <summary>Switch to workspace 2</summary>
+      <description>Switch to narrow-space workspace 2</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-3" type="as">
+      <default>["&lt;Super&gt;3"]</default>
+      <summary>Switch to workspace 3</summary>
+      <description>Switch to narrow-space workspace 3</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-4" type="as">
+      <default>["&lt;Super&gt;4"]</default>
+      <summary>Switch to workspace 4</summary>
+      <description>Switch to narrow-space workspace 4</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-5" type="as">
+      <default>["&lt;Super&gt;5"]</default>
+      <summary>Switch to workspace 5</summary>
+      <description>Switch to narrow-space workspace 5</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-6" type="as">
+      <default>["&lt;Super&gt;6"]</default>
+      <summary>Switch to workspace 6</summary>
+      <description>Switch to narrow-space workspace 6</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-7" type="as">
+      <default>["&lt;Super&gt;7"]</default>
+      <summary>Switch to workspace 7</summary>
+      <description>Switch to narrow-space workspace 7</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-8" type="as">
+      <default>["&lt;Super&gt;8"]</default>
+      <summary>Switch to workspace 8</summary>
+      <description>Switch to narrow-space workspace 8</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-9" type="as">
+      <default>["&lt;Super&gt;9"]</default>
+      <summary>Switch to workspace 9</summary>
+      <description>Switch to narrow-space workspace 9</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-10" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (10)</summary>
+      <description>Trigger narrow-space Super+S</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-11" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (11)</summary>
+      <description>Trigger narrow-space workspace 11</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-12" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (12)</summary>
+      <description>Trigger narrow-space worskpace 12</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-13" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (13)</summary>
+      <description>Trigger narrow-space worskpace 13</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-14" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (14)</summary>
+      <description>Trigger narrow-space worskpace 14</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-15" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (15)</summary>
+      <description>Trigger narrow-space worskpace 15</description>
+    </key>
+
+    <key name="narrow-space-switch-workspace-16" type="as">
+      <default>[]</default>
+      <summary>Switch workspace (16)</summary>
+      <description>Trigger narrow-space worskpace 16</description>
+    </key>
+
+    <!-- ========================= -->
+    <!-- Move window to workspace -->
+    <!-- ========================= -->
+
+    <!-- Super + Shift + 1..9 -->
+    <key name="narrow-space-move-window-to-workspace-1" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;1"]</default>
+      <summary>Move window to workspace 1</summary>
+      <description>Move focused window to narrow-space workspace 1</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-2" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;2"]</default>
+      <summary>Move window to workspace 2</summary>
+      <description>Move focused window to narrow-space workspace 2</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-3" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;3"]</default>
+      <summary>Move window to workspace 3</summary>
+      <description>Move focused window to narrow-space workspace 3</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-4" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;4"]</default>
+      <summary>Move window to workspace 4</summary>
+      <description>Move focused window to narrow-space workspace 4</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-5" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;5"]</default>
+      <summary>Move window to workspace 5</summary>
+      <description>Move focused window to narrow-space workspace 5</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-6" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;6"]</default>
+      <summary>Move window to workspace 6</summary>
+      <description>Move focused window to narrow-space workspace 6</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-7" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;7"]</default>
+      <summary>Move window to workspace 7</summary>
+      <description>Move focused window to narrow-space workspace 7</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-8" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;8"]</default>
+      <summary>Move window to workspace 8</summary>
+      <description>Move focused window to narrow-space workspace 8</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-9" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;9"]</default>
+      <summary>Move window to workspace 9</summary>
+      <description>Move focused window to narrow-space workspace 9</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-10" type="as">
+      <default>[]</default>
+      <summary>Move window (10)</summary>
+      <description>Move focused window using Super+Shift+10</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-11" type="as">
+      <default>[]</default>
+      <summary>Move window (11)</summary>
+      <description>Move focused window using Super+Shift+11</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-12" type="as">
+      <default>[]</default>
+      <summary>Move window (12)</summary>
+      <description>Move focused window using Super+Shift+12</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-13" type="as">
+      <default>[]</default>
+      <summary>Move window (13)</summary>
+      <description>Move focused window using Super+Shift+13</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-14" type="as">
+      <default>[]</default>
+      <summary>Move window (14)</summary>
+      <description>Move focused window using Super+Shift+14</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-15" type="as">
+      <default>[]</default>
+      <summary>Move window (15)</summary>
+      <description>Move focused window using Super+Shift+15</description>
+    </key>
+
+    <key name="narrow-space-move-window-to-workspace-16" type="as">
+      <default>[]</default>
+      <summary>Move window (16)</summary>
+      <description>Move focused window using Super+Shift+16</description>
+    </key>
+
+    <!-- ================================= -->
+    <!-- Move focus to window in workspace -->
+    <!-- ================================= -->
+    <key name="narrow-space-move-focus-left" type="as">
+      <default>["&lt;Super&gt;h"]</default>
+      <summary>Move focus to window left</summary>
+      <description>Move focused window using Super+h</description>
+    </key>
+
+    <key name="narrow-space-move-focus-right" type="as">
+      <default>["&lt;Super&gt;l"]</default>
+      <summary>Move focus to window right</summary>
+      <description>Move focused window using Super+l</description>
+    </key>
+
+    <key name="narrow-space-move-focus-up" type="as">
+      <default>["&lt;Super&gt;k"]</default>
+      <summary>Move focus to window up</summary>
+      <description>Move focused window using Super+k</description>
+    </key>
+
+    <key name="narrow-space-move-focus-down" type="as">
+      <default>["&lt;Super&gt;j"]</default>
+      <summary>Move focus to window down</summary>
+      <description>Move focused window using Super+j</description>
+    </key>
+
+    <!-- =============================== -->
+    <!-- Switch modes within a workspace -->
+    <!-- =============================== -->
+    <key name="narrow-space-change-workspace-mode" type="as">
+      <default>["&lt;Super&gt;comma"]</default>
+      <summary>Change the mode of the current workspace</summary>
+      <description>Modes can be tile (vertical, horizontal) or stacking</description>
+    </key>
+
+    <!-- ============================== -->
+    <!-- Resizing windows or workspaces -->
+    <!-- ============================== -->
+    <key name="narrow-space-resize-inc" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;p"]</default>
+      <summary>Resize window +</summary>
+      <description>Resize window with super shift + </description>
+    </key>
+
+    <key name="narrow-space-resize-dec" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;o"]</default>
+      <summary>Resize window .</summary>
+      <description>Resize window with super shift . </description>
+    </key>
+
+    <!-- ================================= -->
+    <!-- Moving windows within a workspace -->
+    <!-- ================================= -->
+    <key name="narrow-space-move-window-left" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;h"]</default>
+      <summary>Resize window +</summary>
+      <description>Move active window one to the left within the workspace.
+      Works only in vertical tiling mode</description>
+    </key>
+
+    <key name="narrow-space-move-window-right" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;l"]</default>
+      <summary>Resize window +</summary>
+      <description>Move active window one to the right within the workspace.
+      Works only in vertical tiling mode</description>
+    </key>
+
+    <key name="narrow-space-move-window-up" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;k"]</default>
+      <summary>Resize window +</summary>
+      <description>Move active window one up within the workspace.
+      Works only in vertical tiling mode</description>
+    </key>
+
+    <key name="narrow-space-move-window-down" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;j"]</default>
+      <summary>Resize window +</summary>
+      <description>Move active window one to down within the workspace.
+      Works only in vertical tiling mode</description>
+    </key>
+
+    <!-- ============================================== -->
+    <!-- Enter/Leave Service mode                       -->
+    <!-- In service mode windows can be joined          -->
+    <!-- to a workspace (workspace withing workspace)   -->
+    <!-- by using the "narrow-space-move-window-" functions -->
+    <!-- ======================== -->
+    <key name="narrow-space-service-mode" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;x"]</default>
+      <summary>Resize window +</summary>
+      <description>Enter and leave service mode</description>
+    </key>
+
+    <!-- ============================================== -->
+    <!-- Toggle currently active window floating/tiling -->
+    <!-- ============================================== -->
+    <key name="narrow-space-toggle-floating" type="as">
+      <default>["&lt;Super&gt;&lt;Shift&gt;f"]</default>
+      <summary>Resize window +</summary>
+      <description>Disable/Enable again the tiling for the focused window </description>
+    </key>
+
+  </schema>
+</schemalist>

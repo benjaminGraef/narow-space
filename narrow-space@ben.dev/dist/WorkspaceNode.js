@@ -1,0 +1,667 @@
+
+import { BaseNode } from './BaseNode.js';
+
+export class WorkspaceNode extends BaseNode {
+    constructor(id) {
+        super(id, 'workspace');
+
+        this.modes = Object.freeze({
+            VERTICAL: 'vertical',
+            HORIZONTAL: 'horizontal',
+            STACKING_V: 'stacking-v', // change window with left right 
+            STACKING_H: 'stacking-h', // change window with up down
+        });
+
+        /** @type {BaseNode[]} */
+        this.leaves = [];
+
+        this.currentMode = this.modes.VERTICAL;
+
+        /** @type {BaseNode|null} */
+        this.focusedLeaf = null;
+
+        /** @type {BaseNode|null} */
+        this.lastFocusedLeaf = null;
+
+        this.STACKED_OVERLAP = 20;
+    }
+
+    toSerializable() {
+        return {
+            ...super.toSerializable(),
+            currentMode: this.currentMode,
+            leaves: this.leaves.map(leaf => leaf.toSerializable()),
+            focusedLeafId: this.focusedLeaf?.id || null,
+            lastFocusedLeafId: this.lastFocusedLeaf?.id || null,
+            STACKED_OVERLAP: this.STACKED_OVERLAP,
+        };
+    }
+
+    restore(data) {
+        super.restore(data);
+        this.currentMode = data.currentMode;
+        this.focusedLeafId = data.focusedLeaf?.id || null;
+        this.lastFocusedLeafId = data.lastFocusedLeaf?.id || null;
+        this.STACKED_OVERLAP = data.STACKED_OVERLAP;
+        // leaves will be restored later when all nodes exist
+    }
+
+    setNextMode() {
+        if (this.focusedLeaf?.isWorkspace()) {
+            this.focusedLeaf.setNextMode();
+            return;
+        }
+
+        if (this.currentMode === this.modes.VERTICAL) {
+            this.currentMode = this.modes.HORIZONTAL;
+        } else if (this.currentMode === this.modes.HORIZONTAL) {
+            this.currentMode = this.modes.STACKING_V;
+        }
+        else if (this.currentMode === this.modes.STACKING_V) {
+            this.currentMode = this.modes.STACKING_H;
+        }
+        else {
+            this.currentMode = this.modes.VERTICAL;
+        }
+
+        this.show();
+    }
+
+    // resize the currently active leaf node, depeding on the mode
+    resize(deltaPx) {
+        if (this.focusedLeaf?.isWorkspace()) {
+            this.focusedLeaf.resize(deltaPx);
+            return;
+        }
+
+        const n = this.leaves.length;
+        if (n <= 1 || !this.focusedLeaf || !this.workArea) {
+            return;
+        }
+
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
+            return;
+        }
+
+        this.ensureWeights();
+
+        const leaves = this.leaves;
+        const idx = leaves.indexOf(this.focusedLeaf);
+        if (idx < 0) {
+            return;
+        }
+
+        const isVertical = (this.currentMode === this.modes.VERTICAL);
+        const totalPx = isVertical ? this.workArea.width : this.workArea.height;
+        const weights = isVertical ? this._weightsX : this._weightsY;
+
+        this.normalizeMissingWeights(leaves, weights);
+
+        // Choose neighbor index: prefer right/down, else left/up
+        let j = idx + 1;
+        if (j >= n) {
+            j = idx - 1;
+        }
+        if (j < 0) {
+            return;
+        }
+
+        const idA = leaves[idx].getId();
+        const idB = leaves[j].getId();
+
+        // Convert pixel delta to weight delta relative to current sum
+        let sum = 0;
+        for (const leaf of leaves) {
+            sum += weights.get(leaf.getId());
+        }
+
+        const pxPerWeight = totalPx / sum;
+        if (!(pxPerWeight > 0)) {
+            return;
+        }
+
+        let dW = deltaPx / pxPerWeight;
+
+        const MIN_PX = 80;
+        const minW = MIN_PX / pxPerWeight;
+
+        let wA = weights.get(idA);
+        let wB = weights.get(idB);
+
+        // We want: wA' = wA + dW, wB' = wB - dW
+        // Calmp dW so wA' >= minW and wB' >= minW
+        const maxGrowA = (wB - minW);
+        const maxShrinkA = (wA - minW);
+
+        if (dW > maxGrowA) {
+            dW = maxGrowA;
+        }
+        if (-dW > maxShrinkA) {
+            dW = -maxShrinkA;
+        }
+
+        wA = Math.max(minW, wA + dW);
+        wB = Math.max(minW, wB - dW);
+
+        weights.set(idA, wA);
+        weights.set(idB, wB);
+
+        this.show();
+    }
+
+    addLeaf(leaf) {
+        if (this.focusedLeaf?.isWorkspace()) {
+            return this.focusedLeaf.addLeaf(leaf);
+        }
+
+        if (!leaf || this.leaves.includes(leaf)) {
+            return false;
+        }
+
+        leaf.setParent?.(this);
+        this.leaves.push(leaf);
+
+        if (!this.focusedLeaf) {
+            this.focusedLeaf = leaf;
+            this.lastFocusedLeaf = null;
+        }
+
+        return true;
+    }
+
+    // return true if the action could be performed, false otherwise
+    moveWindow(direction) {
+        if (this.focusedLeaf?.isWorkspace()) {
+            if (this.focusedLeaf.moveWindow(direction)) {
+                return true;
+            }
+            // child could not handle it, lets do it in this workspace
+        }
+
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
+            if (this.parent) {
+                return false;
+            }
+            return true;
+        }
+        const leaf = this.getLeafInDirection(direction);
+        if (!leaf) {
+            if (this.parent) {
+                return false;
+            }
+            return true;
+        }
+
+        const otherIx = this.leaves.indexOf(leaf);
+        const currentIx = this.leaves.indexOf(this.focusedLeaf);
+
+        const tmp = this.leaves[otherIx];
+        this.leaves[otherIx] = this.leaves[currentIx];
+        this.leaves[currentIx] = tmp;
+
+        this.show();
+        return true;
+    }
+
+    joinWindow(direction) {
+        if (this.focusedLeaf?.isWorkspace()) {
+            this.focusedLeaf.joinWindow(direction);
+            return;
+        }
+
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
+            return;
+        }
+
+        if (!this.focusedLeaf) {
+            return;
+        }
+
+        const otherLeaf = this.getLeafInDirection(direction);
+        if (!otherLeaf) {
+            return;
+        }
+
+        if (otherLeaf === this.focusedLeaf) {
+            return;
+        }
+
+        // Create nested workspace that will hold both leaves
+        const nested = new WorkspaceNode(`join:${this.getId()}:${Date.now()}`);
+        nested.setWorkArea(this.workArea);
+        nested.addLeaf(otherLeaf);
+        nested.addLeaf(this.focusedLeaf);
+
+        this.removeLeaf(otherLeaf, /*show*/ false);
+        this.removeLeaf(this.focusedLeaf, /*show*/ false);
+
+        this.leaves.push(nested);
+        nested.setParent?.(this);
+
+        this.lastFocusedLeaf = this.focusedLeaf;
+        this.focusedLeaf = nested;
+
+        this.show();
+    }
+
+    getNumberOfLeaves() {
+        return this.leaves.length;
+    }
+
+    removeLeaf(leafOrId, _show = true) {
+        const idx = this.leaves.findIndex(l =>
+            l === leafOrId ||
+            l.getId() === leafOrId ||
+            l.id === leafOrId
+        );
+
+        if (idx < 0) {
+            // not found in this workspace, check all leaf workspaces
+            for (let i = 0; i < this.leaves.length; i++) {
+                const leaf = this.leaves[i];
+                if (leaf.isWorkspace() && leaf.removeLeaf(leafOrId)) {
+                    // window was in that workspace
+                    if (leaf.getNumberOfLeaves() === 0) {
+                        // collapse nested workspace
+                        this.leaves.splice(i, 1);
+                        this.focusedLeaf = this.lastFocusedLeaf;
+                        this.show();
+                    }
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        const removed = this.leaves[idx];
+        const wasFocused = removed === this.focusedLeaf;
+
+        this.leaves.splice(idx, 1);
+
+        if (removed.getParent?.() === this) {
+            removed.setParent?.(null);
+        }
+
+        if (this.lastFocusedLeaf === removed) {
+            this.lastFocusedLeaf = null;
+        }
+
+        if (this.leaves.length === 0) {
+            this.focusedLeaf = null;
+            this.lastFocusedLeaf = null;
+            return true;
+        }
+
+        if (wasFocused) {
+            if (this.lastFocusedLeaf && this.leaves.includes(this.lastFocusedLeaf)) {
+                this.focusedLeaf = this.lastFocusedLeaf;
+            } else {
+                this.focusedLeaf = this.leaves[Math.min(idx, this.leaves.length - 1)];
+            }
+            this.lastFocusedLeaf = null;
+        }
+
+        this.show();
+        return true;
+    }
+
+    getLeafInDirection(direction) {
+        const center = this.focusedLeaf?.getCenter?.();
+        if (!center) {
+            return undefined;
+        }
+
+        let best = undefined;
+        let bestDist2 = Infinity;
+
+        for (const leaf of this.leaves) {
+            if (leaf === this.focusedLeaf) {
+                continue;
+            }
+
+            const other = leaf.getCenter?.();
+            if (!other) {
+                continue;
+            }
+
+            const dx = other.x - center.x;
+            const dy = other.y - center.y;
+
+            let ok = false;
+            switch (direction) {
+                case 'left': ok = dx < 0; break;
+                case 'right': ok = dx > 0; break;
+                case 'up': ok = dy < 0; break;
+                case 'down': ok = dy > 0; break;
+            }
+            if (!ok) {
+                continue;
+            }
+
+            const d2 = dx * dx + dy * dy;
+            if (d2 < bestDist2) {
+                bestDist2 = d2;
+                best = leaf;
+            }
+        }
+
+        return best;
+    }
+
+    focus() {
+        if (!this.focusedLeaf) {
+            if (this.leaves.length > 0) {
+                this.focusedLeaf = this.leaves[0]
+            }
+        }
+        this.focusedLeaf?.focus();
+    }
+
+    // returns true if the moveFocus was performed, false otherwise
+    moveFocus(direction) {
+        const n = this.leaves.length;
+        if (n === 0) {
+            return false;
+        }
+
+        if (!this.focusedLeaf || !this.leaves.includes(this.focusedLeaf)) {
+            this.focusedLeaf = this.leaves[0];
+            this.lastFocusedLeaf = null;
+        }
+
+        // check first if the current leaf is a workspace in itself
+        if (this.focusedLeaf?.isWorkspace()) {
+            if (this.focusedLeaf.moveFocus(direction)) {
+                return true;
+            }
+        }
+
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
+            let idx = this.leaves.indexOf(this.focusedLeaf);
+            if (idx < 0) idx = 0;
+
+            let next;
+            if (this.currentMode === this.modes.STACKING_V) {
+                if (direction === 'left') {
+                    next = true;
+                } else if (direction === 'right') {
+                    next = false;
+                } else {
+                    return false;
+                }
+            } else {
+                if (direction === 'up') {
+                    next = true;
+                } else if (direction === 'down') {
+                    next = false;
+                } else {
+                    return false;
+                }
+            }
+            idx = next ? ((idx + 1) % n) : (idx === 0 ? (n - 1) : (idx - 1));
+
+            this.lastFocusedLeaf = this.focusedLeaf;
+            this.focusedLeaf = this.leaves[idx];
+
+            this.focusedLeaf?.focus();
+            this.show();
+            return true;
+        }
+
+        const leaf = this.getLeafInDirection(direction);
+        if (!leaf) {
+            this.focusedLeaf?.moveFocus?.(direction);
+            return false;
+        }
+
+        this.lastFocusedLeaf = this.focusedLeaf;
+        this.focusedLeaf = leaf;
+        this.focusedLeaf?.focus();
+
+        return true;
+    }
+
+    ensureWeights() {
+        if (!this._weightsX) {
+            this._weightsX = new Map();
+        }
+        if (!this._weightsY) {
+            this._weightsY = new Map();
+        }
+    }
+
+    normalizeMissingWeights(axisLeaves, weights) {
+        // Ensure every leaf has a weight > 0
+        for (const leaf of axisLeaves) {
+            const id = leaf.getId();
+            const w = weights.get(id);
+            if (!(w > 0)) {
+                weights.set(id, 1);
+            }
+        }
+    }
+
+    show() {
+        const leaves = this.leaves;
+        const n = leaves.length;
+        if (n === 0 || !this.workArea) return false;
+
+        this.ensureWeights();
+
+        if (this.currentMode === this.modes.STACKING_V
+            || this.currentMode === this.modes.STACKING_H) {
+            const overlap = this.STACKED_OVERLAP;
+            const ordered = this.focusedLeaf
+                ? [...leaves.filter(l => l !== this.focusedLeaf), this.focusedLeaf]
+                : [...leaves];
+
+            for (let i = 0; i < ordered.length; i++) {
+                const leaf = ordered[i];
+                const x = this.workArea.x + overlap * i;
+                const y = this.workArea.y + overlap * i;
+                const width = Math.max(1, this.workArea.width - overlap * i);
+                const height = Math.max(1, this.workArea.height - overlap * i);
+                leaf.setWorkArea({ x, y, width, height });
+                leaf.show?.();
+            }
+            this.focusedLeaf?.focus?.();
+            return true;
+        }
+
+        if (this.currentMode === this.modes.VERTICAL) {
+            return this.showWeightedVertical(leaves);
+        }
+
+        if (this.currentMode === this.modes.HORIZONTAL) {
+            return this.showWeightedHorizontal(leaves);
+        }
+
+        return false;
+    }
+
+    showWeightedVertical(leaves) {
+        const MIN_PX = 80;
+        const totalW = this.workArea.width;
+        const totalH = this.workArea.height;
+
+        const weights = this._weightsX;
+        this.normalizeMissingWeights(leaves, weights);
+
+        let sum = 0;
+        for (const leaf of leaves) {
+            sum += weights.get(leaf.getId());
+        }
+
+        // compute pixel widths using largest remainder
+        const parts = leaves.map((leaf, i) => {
+            const id = leaf.getId();
+            const w = weights.get(id);
+            const exact = (w / sum) * totalW;
+            return { leaf, id, i, base: Math.floor(exact), rem: exact - Math.floor(exact) };
+        });
+
+        let used = parts.reduce((a, p) => a + p.base, 0);
+        let remaining = totalW - used;
+        parts.slice().sort((a, b) => b.rem - a.rem).forEach(p => {
+            if (remaining > 0) {
+                p.base++;
+                remaining--;
+            }
+        });
+
+        for (const p of parts) {
+            p.base = Math.max(MIN_PX, p.base);
+        }
+
+        // fix overflow caused by clamping
+        let overflow = parts.reduce((a, p) => a + p.base, 0) - totalW;
+        while (overflow > 0) {
+            // shrink the largest panes above MIN_PX first
+            parts.sort((a, b) => b.base - a.base);
+            let shrunk = false;
+            for (const p of parts) {
+                const can = p.base - MIN_PX;
+                if (can <= 0) {
+                    continue;
+                }
+                const dec = Math.min(can, overflow);
+                p.base -= dec;
+                overflow -= dec;
+                shrunk = true;
+                if (overflow === 0) {
+                    break;
+                }
+            }
+            if (!shrunk) {
+                break;
+            }
+        }
+
+        // restore original order
+        parts.sort((a, b) => a.i - b.i);
+
+        let x = this.workArea.x;
+        for (const p of parts) {
+            p.leaf.setWorkArea({ x, y: this.workArea.y, width: p.base, height: totalH });
+            p.leaf.show();
+            x += p.base;
+        }
+
+        this.focusedLeaf?.focus?.();
+        return true;
+    }
+
+    showWeightedHorizontal(leaves) {
+        const MIN_PX = 80;
+        const totalW = this.workArea.width;
+        const totalH = this.workArea.height;
+
+        const weights = this._weightsY;
+        this.normalizeMissingWeights(leaves, weights);
+
+        let sum = 0;
+        for (const leaf of leaves) {
+            sum += weights.get(leaf.getId());
+        }
+
+        const parts = leaves.map((leaf, i) => {
+            const id = leaf.getId();
+            const w = weights.get(id);
+            const exact = (w / sum) * totalH;
+            return { leaf, id, i, base: Math.floor(exact), rem: exact - Math.floor(exact) };
+        });
+
+        let used = parts.reduce((a, p) => a + p.base, 0);
+        let remaining = totalH - used;
+        parts.slice().sort((a, b) => b.rem - a.rem).forEach(p => {
+            if (remaining > 0) {
+                p.base++;
+                remaining--;
+            }
+        });
+
+        for (const p of parts) {
+            p.base = Math.max(MIN_PX, p.base);
+        }
+
+        let overflow = parts.reduce((a, p) => a + p.base, 0) - totalH;
+        while (overflow > 0) {
+            parts.sort((a, b) => b.base - a.base);
+            let shrunk = false;
+            for (const p of parts) {
+                const can = p.base - MIN_PX;
+                if (can <= 0) {
+                    continue;
+                }
+                const dec = Math.min(can, overflow);
+                p.base -= dec;
+                overflow -= dec;
+                shrunk = true;
+                if (overflow === 0) {
+                    break;
+                }
+            }
+            if (!shrunk) {
+                break;
+            }
+        }
+
+        parts.sort((a, b) => a.i - b.i);
+
+        let y = this.workArea.y;
+        for (const p of parts) {
+            p.leaf.setWorkArea({ x: this.workArea.x, y, width: totalW, height: p.base });
+            p.leaf.show();
+            y += p.base;
+        }
+
+        this.focusedLeaf?.focus?.();
+        return true;
+    }
+
+
+    hide() {
+        for (const leaf of this.leaves) {
+            leaf.hide?.();
+        }
+    }
+
+    computeLayout(n, mode) {
+        let width = this.workArea.width;
+        let height = this.workArea.height;
+        let xStep = 0;
+        let yStep = 0;
+
+        if (mode === this.modes.VERTICAL) {
+            width = Math.max(1, Math.floor(this.workArea.width / n));
+            height = this.workArea.height;
+            xStep = width;
+        } else if (mode === this.modes.HORIZONTAL) {
+            width = this.workArea.width;
+            height = Math.max(1, Math.floor(this.workArea.height / n));
+            yStep = height;
+        }
+
+        return { width, height, xStep, yStep };
+    }
+
+    setFocusedLeaf(leafId) {
+        if (this.focusedLeaf?.id === leafId) {
+            return true;
+        }
+
+        for (const leaf of this.leaves) {
+            if (leaf.id === leafId) {
+                this.focusedLeaf = leaf;
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

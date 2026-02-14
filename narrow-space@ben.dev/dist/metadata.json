@@ -1,0 +1,16 @@
+{
+  "name": "narrow-space",
+  "description": "A tiling window manager on top of gnome",
+  "uuid": "narrow-space@ben.dev",
+  "shell-version": [
+    "46",
+    "47",
+    "48"
+  ],
+  "version": 0.1,
+  "url": "https://github.com/benjaminGraef/narow-space",
+  "settings-schema": "org.gnome.shell.extensions.narrow-space",
+  "donations": {
+    "paypal": "benjamingraef9"
+  }
+}
